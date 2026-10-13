@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSH</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body, #root { height: 100%; margin: 0; padding: 0; }
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background: #ffffff;
+        color: #1f2328;
+      }
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-thumb { background: #d9d9dd; border-radius: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      button { font-family: inherit; }
+      /* 侧栏悬停才显示删除按钮 */
+      .row-del { visibility: hidden; }
+      [data-hover="true"] .row-del { visibility: visible; }
+      /* 思考中三点动画 */
+      .tdot {
+        width: 5px; height: 5px; border-radius: 5px;
+        background: #9aa0aa; display: inline-block;
+        animation: tbounce 1s infinite ease-in-out;
+      }
+      .tdot:nth-child(2) { animation-delay: .15s; }
+      .tdot:nth-child(3) { animation-delay: .3s; }
+      @keyframes tbounce {
+        0%, 80%, 100% { opacity: .25; }
+        40% { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

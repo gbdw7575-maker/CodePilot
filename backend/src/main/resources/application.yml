@@ -1,0 +1,170 @@
+server:
+  # 本地优先：只监听 loopback；容器部署时通过 SERVER_ADDRESS 环境变量覆盖
+  address: 127.0.0.1
+  port: 8080
+
+spring:
+  application:
+    name: dsh-backend
+  datasource:
+    # S0 PostgreSQL 迁移：主环境走 PostgreSQL，生产级文件库
+    # 部署前需本地建库：CREATE DATABASE dsh;
+    # 凭据走环境变量，不硬编码生产密码
+    url: jdbc:postgresql://localhost:5432/dsh
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:dsh}
+    password: ${DB_PASSWORD:dsh}
+    hikari:
+      pool-name: dsh-pg
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # 靠 ddl-auto=update 建表；生产稳定后应改 validate + Flyway（本次不做 Flyway）
+      ddl-auto: update
+  jackson:
+    # 契约：固定 DTO 拒绝未知字段（动态 JSON Schema 与业务结果对象除外）
+    deserialization:
+      fail-on-unknown-properties: true
+
+dsh:
+  contract-version: 0.1.0-design
+  security:
+    # 允许注册的项目根目录；空列表表示不限制（仍要求绝对路径），配置后只允许列表内目录
+    allowed-roots: []
+  budget:
+    # 根 Run 初始预算视图；真实预算账本在 DSH-005 落地
+    max-model-requests: 24
+    max-tool-calls: 80
+    max-cumulative-tokens: 200000
+    deadline-minutes: 20
+    # D-07 单次模型请求上下文窗口上限（与累计 Run 预算分开），对应 DeepSeek V3 128K
+    context-window-tokens: 128000
+  loop:
+    # 后台线程执行根 Run；submit 仅返回 202
+    synchronous: false
+    # A1/A2 历史压缩口径。默认 WINDOW_LASTUSER＝既有行为（只在单请求超窗时压缩，
+    # 保护区＝最后一条 user 及其之后）；BUDGET_WATERMARK＝修复口径（另按累计预算水位触发，
+    # 保护区＝最近 compaction-protected-tail-units 个执行单元，使单轮长任务也能折叠）。
+    # 未知取值保守回退到 WINDOW_LASTUSER，不会因拼写错误改变运行时行为。
+    history-compaction-mode: WINDOW_LASTUSER
+    # 累计预算水位阈值（%）：累计 Token 与模型请求次数两个维度取最大消耗率，达到即触发压缩。
+    # 仅 BUDGET_WATERMARK 口径生效；<=0 表示不按水位触发。
+    compaction-watermark-percent: 70
+    # 保护区内逐字保留的最近执行单元数（一个单元＝连续的 tool 结果 + 其前一条消息）。
+    # 仅 BUDGET_WATERMARK 口径生效；无论取何值，user 消息始终逐字保留、工具调用/结果始终成对。
+    compaction-protected-tail-units: 5
+    # C23：提前折叠旧大输出；0保留现有默认，显式设5可保护最近5个单元后折叠。
+    # 仅使用当前Run公开且字节/哈希完整的文本产物；无需额外模型请求。
+    replay-protected-tail-units: 0
+    # 是否折叠「未归档」的历史工具结果（默认 false＝保持既有视图）。
+    # 背景：D-08 只归档超过 8000 字符的输出，而折叠路径只对有产物的结果生效；
+    # 实测长任务里 59 条工具结果只有 2 条有产物，绝大多数小输出持续累积、占单轮约 43%。
+    # 开启后：保护区外的旧工具结果只保留有界片段（replay-unarchived-excerpt-chars 字符）。
+    # 只影响请求视图，transcript 原文不变；折叠后若未变小则回退原消息，绝不更差。
+    replay-fold-unarchived: false
+    # 折叠未归档结果时保留的片段字符数（有界，非完整）。
+    replay-unarchived-excerpt-chars: 600
+    # A4：自动验证未通过后，允许把失败事实回流给模型、在剩余预算内继续修正的**额外**验证次数。
+    # 0（默认）＝既有行为：验证未通过即落 VERIFICATION_FAILED 终态，模型没有第二次机会。
+    # >0 时：未通过则追加一条 user 消息（命令 / 退出码 / 测试计数 + discovered=0 的解释），
+    # Run 回到 RUNNING 继续修正，最多再验证该次数；次数耗尽仍失败才落终态。
+    # 每次修正都照常计入请求 / Token / 工具调用 / 墙钟预算，不会被豁免。
+    verification-retry-limit: 0
+    # C11实验：先独立验证再有界完成复核；真实收益未校准，默认关闭。
+    completion-review-enabled: false
+    # 全Run复核响应上限（工具/追问/无效JSON也计数）；1..8，非法回退3，不重置累计预算。
+    completion-review-max-responses: 3
+  workspace:
+    # 隔离任务副本根目录；留空使用系统临时目录 dsh-workspaces
+    root: ""
+    # write_file 的写入尝试次数：只对 Windows 上瞬时出现的 AccessDeniedException 重试，
+    # 其它 IOException 不重试。设为 1 即恢复旧行为（单次写入）。
+    write-attempts: 3
+  sandbox:
+    # 生产固定 docker：模型命令只在容器内执行；local 仅用于开发/测试
+    mode: docker
+    image: dsh-sandbox:latest
+    memory: 512m
+    cpus: "2.0"
+    default-timeout-seconds: 60
+    max-timeout-seconds: 600
+    output-limit-bytes: 262144
+  tool-search:
+    # EXTENSION：默认关闭；相同配置对照（开发文档 §17）有收益后再启用
+    enabled: false
+    rrf-k: 60
+    max-results: 5
+    max-searches-per-run: 5
+    # BM25 为默认主排序；字符 n-gram/RRF 仅用于显式实验对照
+    vector-enabled: false
+    min-bm25-score: 0.5
+  memory:
+    # EXTENSION Auto Memory：经验存储于项目根 .myagent/memory/<projectId>/（应用数据，不参与补丁）
+    enabled: true
+    read-enabled: true
+    write-enabled: true
+    rules-file: AGENTS.md
+    index-max-lines: 200
+    index-max-bytes: 25000
+  orchestration:
+    # EXTENSION 子 Agent/编排：默认关闭，先有单 Agent 基线，相同配置对照有收益再启用
+    enabled: false
+    max-depth: 2
+    sub-max-model-requests: 8
+    sub-max-tool-calls: 30
+    sub-max-tokens: 60000
+    sub-timeout-seconds: 600
+    worker-can-spawn: false
+    # D-16 fanout_subagents 单次并行扇出上限（有界并行：超出整体拒绝，不部分启动）
+    max-fanout: 4
+    plan:
+      # MA-02 计划草案上限（update_plan v2，仅落库不启动执行；缺失/非正回退同默认）
+      max-tasks-per-plan: 12
+      max-deps-per-task: 6
+      max-input-refs-per-task: 8
+      dispatch-max-batch: 12
+      await-default-timeout-ms: 120000
+  web:
+    # D-15 EXTENSION 外部资料：默认关闭（未经授权不联网）；启用后仅只读
+    # web_search/web_fetch 可经 tool_search 挂载。allow-loopback 仅供本机联调，
+    # 生产必须 false（拒绝环回/内网地址，SSRF 防护）。
+    enabled: false
+    allow-loopback: false
+    connect-timeout-seconds: 5
+    read-timeout-seconds: 20
+    max-bytes: 524288
+    max-chars: 20000
+    # 只读搜索端点（返回 {"results":[{"title","url","snippet"}]}）；留空则 web_search 不可用
+    search-endpoint: ""
+  mcp:
+    # D-17b EXTENSION MCP 只读接入：默认关闭（fail-closed）。仅注册远程
+    # annotations.readOnlyHint=true 的工具；allow-loopback 仅供本机联调，
+    # 生产必须 false（拒绝环回/内网地址）。credentialRef 经凭据库解析为
+    # Authorization 头，密钥不进入日志、事件或工具输出。
+    enabled: false
+    endpoint: ""
+    credential-ref: ""
+    allow-loopback: false
+    connect-timeout-seconds: 5
+    read-timeout-seconds: 20
+    max-chars: 20000
+  rag:
+    # RAG 检索（EXTENSION）：默认关闭，与 ToolSearch/MCP/Web 一致。
+    # 启用后从 sources 加载文档→切分→嵌入→存入 storage-dir；
+    # MemoryAssembler 每轮模型回答前自动检索（cosine-floor 过滤低相关片段），
+    # 命中时注入证据段 + 证据判断规则；rag_search 工具保留作补查。
+    # cosine-floor 为向量腿相似度下限，低于阈值的片段不计分（过滤不相关 query 污染）。
+    enabled: false
+    sources: doc/外部知识库
+    storage-dir: .myagent/rag
+    chunk-size: 1000
+    top-k: 3
+    rrf-k: 60
+    bm25-enabled: true
+    embedding-provider: char-ngram
+    cosine-floor: 0.55
+    max-searches-per-run: 3
+    bm25-min-hits: 3

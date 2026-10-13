@@ -1,0 +1,300 @@
+{
+  "description": "MA-01 冻结的编排升级目标任务契约（设计冻结，不是已发布运行时接口）。本文件是 AT-01/AT-02 契约级正反例的机器可校验源；发布到 tools.schema.json/events.schema.json 由后续切片（MA-05/MA-10）完成。正反例只验证冻结契约本身，不代表运行时已实现。",
+  "frozenAt": "2026-09-28",
+  "baselineCommit": "ee191c9",
+  "taskId": "MA-01",
+  "runStateValues": [
+    "QUEUED", "PREPARING", "RUNNING", "WAITING_APPROVAL", "WAITING_INPUT",
+    "VERIFYING", "CANCELLING", "RECOVERING", "BLOCKED", "COMPLETED",
+    "FAILED", "CANCELLED"
+  ],
+  "taskStates": {
+    "values": [
+      "DRAFT", "PENDING", "READY", "RUNNING", "VERIFYING", "WAITING_APPROVAL",
+      "BLOCKED", "FAILED", "CANCELLING", "CANCELLED", "SUCCEEDED"
+    ],
+    "terminal": ["SUCCEEDED", "FAILED", "CANCELLED"]
+  },
+  "stateMapping": [
+    { "taskState": "DRAFT", "runState": null, "note": "仅存在于未提交计划草案；无子 Run，不产生事件" },
+    { "taskState": "PENDING", "runState": null, "note": "已提交但依赖未满足；根 Run 保持现有状态，不写 RunState 字段" },
+    { "taskState": "READY", "runState": null, "note": "依赖已验收、待调度领取；尚无子 Run" },
+    { "taskState": "RUNNING", "runState": "RUNNING", "note": "子 Run 处于 PREPARING/RUNNING/WAITING_INPUT 之一时的任务侧状态" },
+    { "taskState": "VERIFYING", "runState": "VERIFYING", "note": "子 Run 收尾进入验证分支；证据未通过不得离开本状态前往 SUCCEEDED" },
+    { "taskState": "WAITING_APPROVAL", "runState": "WAITING_APPROVAL", "note": "子 Run 审批挂起；审批通过与状态推进由调度服务完成" },
+    { "taskState": "BLOCKED", "runState": null, "note": "任务级阻塞（依赖冲突/输入冲突/需求不明）；不把根 Run 置为 BLOCKED" },
+    { "taskState": "FAILED", "runState": "FAILED", "note": "子 Run FAILED 终态；重试新建 attempt，不覆盖旧尝试记录" },
+    { "taskState": "CANCELLING", "runState": "CANCELLING", "note": "取消请求已登记；实际终止以子 Run 终态为准" },
+    { "taskState": "CANCELLED", "runState": "CANCELLED", "note": "子 Run 已取消终态" },
+    { "taskState": "SUCCEEDED", "runState": "COMPLETED", "note": "验收通过且产物封存后由调度服务写入；子 Run COMPLETED 不自动等同本状态" }
+  ],
+  "limits": {
+    "maxTasksPerPlan": 12,
+    "maxDependsOnPerTask": 6,
+    "maxInputRefsPerTask": 8,
+    "maxAcceptanceItemsPerTask": 8,
+    "maxGoalLength": 2000,
+    "maxDeliverableLength": 500,
+    "maxAcceptanceItemLength": 200,
+    "maxDispatchBatch": 12,
+    "maxAwaitBatch": 12,
+    "maxCancelBatch": 12,
+    "maxPlanTextBudget": 16000
+  },
+  "configNames": [
+    { "name": "dsh.orchestration.plan-max-tasks", "default": 12 },
+    { "name": "dsh.orchestration.plan-max-deps-per-task", "default": 6 },
+    { "name": "dsh.orchestration.plan-max-input-refs-per-task", "default": 8 },
+    { "name": "dsh.orchestration.dispatch-max-batch", "default": 12 },
+    { "name": "dsh.orchestration.await-default-timeout-ms", "default": 120000 }
+  ],
+  "gating": {
+    "alwaysMounted": ["update_plan"],
+    "orchestrationGated": ["dispatch_tasks", "await_tasks", "read_task_result", "cancel_tasks"],
+    "workerDenied": ["dispatch_tasks", "await_tasks", "read_task_result", "cancel_tasks", "run_subagent", "start_orchestration", "fanout_subagents", "update_plan"],
+    "note": "update_plan 沿用 CORE 常驻（不受 dsh.orchestration.enabled 门控；MA-03 修订：worker 角色仍拒绝——计划改写/版本权属主 Agent，常驻与角色过滤正交）；新调度工具与 run_subagent/start_orchestration/fanout_subagents 同门控（dsh.orchestration.enabled），关闭时不可发现且执行点拒绝；worker 角色一律拒绝计划改写与派生类工具（MA-03 起由 RunCapabilityPolicy 在目录可见性/发现/执行/服务入口四层统一执行）"
+  },
+  "reasonCodes": {
+    "DUPLICATE_TASK_ID": "VALIDATION_FAILED",
+    "UNKNOWN_DEPENDENCY": "VALIDATION_FAILED",
+    "SELF_DEPENDENCY": "VALIDATION_FAILED",
+    "CYCLE_DETECTED": "VALIDATION_FAILED",
+    "INVALID_INPUT_REF": "VALIDATION_FAILED",
+    "TASK_GRAPH_TOO_LARGE": "VALIDATION_FAILED",
+    "MIXED_PLAN_FORMAT": "INVALID_INPUT",
+    "REVISION_WITHOUT_PLAN_ID": "INVALID_INPUT",
+    "REVISION_MISMATCH": "VERSION_CONFLICT",
+    "TASK_LOCKED": "INVALID_STATE",
+    "DEPENDENCY_NOT_DISPATCHED": "INVALID_STATE",
+    "PLAN_NOT_FOUND": "RESOURCE_NOT_FOUND",
+    "TASK_NOT_FOUND": "RESOURCE_NOT_FOUND",
+    "ORCHESTRATION_DISABLED": "PERMISSION_DENIED",
+    "WORKER_SPAWN_DENIED": "PERMISSION_DENIED",
+    "REQUEST_KEY_CONFLICT": "IDEMPOTENCY_CONFLICT",
+    "QUOTA_FULL": "RESOURCE_BUSY",
+    "BUDGET_RESERVATION_PENDING": "RESOURCE_BUSY"
+  },
+  "schemas": {
+    "TaskDef": {
+      "type": "object",
+      "required": ["taskId", "goal", "dependsOn", "deliverable", "acceptance", "executionMode", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9_-]+$" },
+        "goal": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "dependsOn": { "type": "array", "items": { "type": "string" }, "maxItems": 6 },
+        "inputRefs": {
+          "type": "array", "maxItems": 8,
+          "items": {
+            "type": "object", "required": ["taskId", "output"], "additionalProperties": false,
+            "properties": { "taskId": { "type": "string", "minLength": 1 }, "output": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "deliverable": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" },
+        "acceptance": { "type": "array", "maxItems": 8, "items": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" } },
+        "resourceScope": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "read": { "type": "array", "items": { "type": "string" } },
+            "write": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "executionMode": { "enum": ["DELEGATED", "INLINE"] },
+        "required": { "type": "boolean" }
+      }
+    },
+    "UpdatePlanRequest": {
+      "type": "object",
+      "required": ["tasks"],
+      "additionalProperties": false,
+      "properties": {
+        "planId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^plan_[A-Za-z0-9_-]+$" },
+        "expectedRevision": { "type": "integer", "minimum": 1 },
+        "goal": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "tasks": { "type": "array", "items": { "$ref": "TaskDef" }, "minItems": 1, "maxItems": 12 }
+      }
+    },
+    "DispatchTasksRequest": {
+      "type": "object",
+      "required": ["planId", "expectedRevision", "taskIds", "requestKey"],
+      "additionalProperties": false,
+      "properties": {
+        "planId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^plan_[A-Za-z0-9_-]+$" },
+        "expectedRevision": { "type": "integer", "minimum": 1 },
+        "taskIds": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 12 },
+        "requestKey": { "type": "string", "minLength": 8, "maxLength": 128, "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    },
+    "AwaitTasksRequest": {
+      "type": "object",
+      "required": ["taskIds", "waitMode"],
+      "additionalProperties": false,
+      "properties": {
+        "taskIds": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 12 },
+        "waitMode": { "enum": ["ANY", "ALL"] },
+        "afterCursor": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "timeoutMs": { "type": "integer", "minimum": 0, "maximum": 600000 }
+      }
+    },
+    "ReadTaskResultRequest": {
+      "type": "object",
+      "required": ["taskId"],
+      "additionalProperties": false,
+      "properties": {
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "attemptId": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "CancelTasksRequest": {
+      "type": "object",
+      "required": ["taskIds", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "taskIds": { "type": "array", "items": { "type": "string" }, "minItems": 1, "maxItems": 12 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" }
+      }
+    },
+    "EventPlanUpdated": {
+      "type": "object",
+      "required": ["planId", "revision"],
+      "additionalProperties": false,
+      "properties": {
+        "planId": { "type": "string", "minLength": 1 },
+        "revision": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "EventTaskStateChanged": {
+      "type": "object",
+      "required": ["taskId", "taskVersion", "attemptId", "childRunId", "from", "to", "reasonCode"],
+      "additionalProperties": false,
+      "properties": {
+        "taskId": { "type": "string", "minLength": 1 },
+        "taskVersion": { "type": "integer", "minimum": 1 },
+        "attemptId": { "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }] },
+        "childRunId": { "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }] },
+        "from": { "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }] },
+        "to": { "type": "string", "enum": ["DRAFT", "PENDING", "READY", "RUNNING", "VERIFYING", "WAITING_APPROVAL", "BLOCKED", "FAILED", "CANCELLING", "CANCELLED", "SUCCEEDED"] },
+        "reasonCode": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "EventTaskResultReady": {
+      "type": "object",
+      "required": ["taskId", "attemptId", "artifactRefs", "verificationRef", "inputDigest", "outputDigest"],
+      "additionalProperties": false,
+      "properties": {
+        "taskId": { "type": "string", "minLength": 1 },
+        "attemptId": { "type": "string", "minLength": 1 },
+        "artifactRefs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "verificationRef": { "anyOf": [{ "type": "string", "minLength": 1 }, { "type": "null" }] },
+        "inputDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "outputDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "EventRunWaitingTasks": {
+      "type": "object",
+      "required": ["taskIds", "afterCursor"],
+      "additionalProperties": false,
+      "properties": {
+        "taskIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "maxItems": 12 },
+        "afterCursor": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "schemaCases": [
+    { "name": "update_plan.create.valid", "schema": "UpdatePlanRequest", "valid": true,
+      "value": { "goal": "按契约拆分登录模块改造", "tasks": [
+        { "taskId": "A", "goal": "确认登录接口与权限约定", "dependsOn": [],
+          "deliverable": "接口契约", "acceptance": ["覆盖成功、错误凭据和未授权访问"],
+          "resourceScope": { "read": ["docs/"], "write": ["docs/login-contract.md"] },
+          "executionMode": "DELEGATED", "required": true } ] } },
+    { "name": "update_plan.update.valid", "schema": "UpdatePlanRequest", "valid": true,
+      "value": { "planId": "plan_demo", "expectedRevision": 3, "tasks": [
+        { "taskId": "A", "goal": "确认登录接口与权限约定", "dependsOn": [],
+          "deliverable": "接口契约", "acceptance": ["覆盖成功、错误凭据和未授权访问"],
+          "executionMode": "INLINE", "required": true },
+        { "taskId": "B", "goal": "依据 A 的契约实现后端", "dependsOn": ["A"],
+          "inputRefs": [{ "taskId": "A", "output": "deliverable" }],
+          "deliverable": "后端补丁和测试证据", "acceptance": ["合法凭据成功", "错误凭据被拒绝"],
+          "executionMode": "DELEGATED", "required": true } ] } },
+    { "name": "update_plan.emptyTasks.invalid", "schema": "UpdatePlanRequest", "valid": false,
+      "value": { "tasks": [] } },
+    { "name": "update_plan.unknownField.invalid", "schema": "UpdatePlanRequest", "valid": false,
+      "value": { "tasks": [], "execute": true } },
+    { "name": "update_plan.executeFieldRejected.invalid", "schema": "UpdatePlanRequest", "valid": false,
+      "value": { "planId": "plan_demo", "expectedRevision": 1, "tasks": [
+        { "taskId": "A", "goal": "立即执行", "dependsOn": [], "deliverable": "x", "acceptance": ["y"],
+          "executionMode": "DELEGATED", "required": true } ], "dispatch": true } },
+    { "name": "update_plan.badTaskIdPattern.invalid", "schema": "UpdatePlanRequest", "valid": false,
+      "value": { "tasks": [
+        { "taskId": "A B", "goal": "任务标识含空格", "dependsOn": [], "deliverable": "x",
+          "acceptance": ["y"], "executionMode": "DELEGATED", "required": true } ] } },
+    { "name": "update_plan.missingAcceptance.invalid", "schema": "UpdatePlanRequest", "valid": false,
+      "value": { "tasks": [
+        { "taskId": "A", "goal": "缺验收标准", "dependsOn": [], "deliverable": "x",
+          "executionMode": "DELEGATED", "required": true } ] } },
+    { "name": "update_plan.emptyGoal.invalid", "schema": "UpdatePlanRequest", "valid": false,
+      "value": { "tasks": [
+        { "taskId": "A", "goal": "   ", "dependsOn": [], "deliverable": "x", "acceptance": ["y"],
+          "executionMode": "DELEGATED", "required": true } ] } },
+    { "name": "dispatch.valid", "schema": "DispatchTasksRequest", "valid": true,
+      "value": { "planId": "plan_demo", "expectedRevision": 2, "taskIds": ["A"], "requestKey": "rk-dispatch-0001" } },
+    { "name": "dispatch.emptyTaskIds.invalid", "schema": "DispatchTasksRequest", "valid": false,
+      "value": { "planId": "plan_demo", "expectedRevision": 2, "taskIds": [], "requestKey": "rk-dispatch-0002" } },
+    { "name": "dispatch.missingRequestKey.invalid", "schema": "DispatchTasksRequest", "valid": false,
+      "value": { "planId": "plan_demo", "expectedRevision": 2, "taskIds": ["A"] } },
+    { "name": "await.valid", "schema": "AwaitTasksRequest", "valid": true,
+      "value": { "taskIds": ["A", "B"], "waitMode": "ALL", "afterCursor": "42", "timeoutMs": 120000 } },
+    { "name": "await.badWaitMode.invalid", "schema": "AwaitTasksRequest", "valid": false,
+      "value": { "taskIds": ["A"], "waitMode": "SOME" } },
+    { "name": "await.timeoutTooLarge.invalid", "schema": "AwaitTasksRequest", "valid": false,
+      "value": { "taskIds": ["A"], "waitMode": "ANY", "timeoutMs": 600001 } },
+    { "name": "readResult.valid", "schema": "ReadTaskResultRequest", "valid": true,
+      "value": { "taskId": "A", "attemptId": "attempt_1" } },
+    { "name": "readResult.missingTaskId.invalid", "schema": "ReadTaskResultRequest", "valid": false,
+      "value": {} },
+    { "name": "cancel.valid", "schema": "CancelTasksRequest", "valid": true,
+      "value": { "taskIds": ["B"], "reason": "上游契约变更，B 的输入作废" } },
+    { "name": "cancel.emptyReason.invalid", "schema": "CancelTasksRequest", "valid": false,
+      "value": { "taskIds": ["B"], "reason": "   " } },
+    { "name": "event.planUpdated.valid", "schema": "EventPlanUpdated", "valid": true,
+      "value": { "planId": "plan_demo", "revision": 2 } },
+    { "name": "event.taskStateChanged.valid", "schema": "EventTaskStateChanged", "valid": true,
+      "value": { "taskId": "A", "taskVersion": 1, "attemptId": "attempt_1", "childRunId": "sub_run_1",
+                 "from": "READY", "to": "RUNNING", "reasonCode": "ATTEMPT_STARTED" } },
+    { "name": "event.taskStateChanged.nullableAttempt.valid", "schema": "EventTaskStateChanged", "valid": true,
+      "value": { "taskId": "A", "taskVersion": 1, "attemptId": null, "childRunId": null,
+                 "from": "PENDING", "to": "READY", "reasonCode": "DEPENDENCIES_SATISFIED" } },
+    { "name": "event.taskStateChanged.badState.invalid", "schema": "EventTaskStateChanged", "valid": false,
+      "value": { "taskId": "A", "taskVersion": 1, "attemptId": null, "childRunId": null,
+                 "from": "PENDING", "to": "STARTED", "reasonCode": "ATTEMPT_STARTED" } },
+    { "name": "event.taskResultReady.valid", "schema": "EventTaskResultReady", "valid": true,
+      "value": { "taskId": "A", "attemptId": "attempt_1", "artifactRefs": ["artifact_1"],
+                 "verificationRef": "verification_1",
+                 "inputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                 "outputDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" } },
+    { "name": "event.taskResultReady.badDigest.invalid", "schema": "EventTaskResultReady", "valid": false,
+      "value": { "taskId": "A", "attemptId": "attempt_1", "artifactRefs": [],
+                 "verificationRef": null, "inputDigest": "xyz", "outputDigest": "abc" } },
+    { "name": "event.runWaitingTasks.valid", "schema": "EventRunWaitingTasks", "valid": true,
+      "value": { "taskIds": ["B", "C"], "afterCursor": "57" } },
+    { "name": "event.runWaitingTasks.empty.invalid", "schema": "EventRunWaitingTasks", "valid": false,
+      "value": { "taskIds": [], "afterCursor": "57" } }
+  ],
+  "semanticCases": [
+    { "name": "duplicateTaskId", "kind": "DUPLICATE_TASK_ID", "value": ["A", "A"] },
+    { "name": "unknownDependency", "kind": "UNKNOWN_DEPENDENCY", "value": [["A", []], ["B", ["A", "X"]]] },
+    { "name": "selfDependency", "kind": "SELF_DEPENDENCY", "value": [["A", ["A"]]] },
+    { "name": "cycleDetected", "kind": "CYCLE_DETECTED", "value": [["A", ["B"]], ["B", ["A"]]] },
+    { "name": "invalidInputRef", "kind": "INVALID_INPUT_REF",
+      "value": [["A", [], []], ["B", ["A"], ["A"]], ["C", ["A"], ["Z"]]] },
+    { "name": "taskGraphTooLarge", "kind": "TASK_GRAPH_TOO_LARGE", "value": 13 },
+    { "name": "revisionMismatch", "kind": "REVISION_MISMATCH", "value": { "expected": 4, "current": 7 } },
+    { "name": "revisionWithoutPlanId", "kind": "REVISION_WITHOUT_PLAN_ID", "value": { "expectedRevision": 2 } },
+    { "name": "runningTaskMutation", "kind": "TASK_LOCKED", "value": { "taskId": "A", "state": "RUNNING" } },
+    { "name": "dependencyNotDispatched", "kind": "DEPENDENCY_NOT_DISPATCHED",
+      "value": { "plan": [["A", "DISPATCHED"], ["B", "PENDING"]], "dispatch": ["B"] } },
+    { "name": "requestKeyConflict", "kind": "REQUEST_KEY_CONFLICT",
+      "value": { "first": { "planId": "plan_demo", "expectedRevision": 1, "taskIds": ["A"], "requestKey": "rk-same-0001" },
+                 "second": { "planId": "plan_demo", "expectedRevision": 1, "taskIds": ["B"], "requestKey": "rk-same-0001" } } }
+  ]
+}

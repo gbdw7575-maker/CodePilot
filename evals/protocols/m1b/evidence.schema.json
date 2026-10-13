@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "M1B design-only evidence claim; NOT an active API schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "dsh-task-acceptance-v1-design"
+    },
+    "mode": {
+      "type": "string",
+      "const": "EXECUTABLE_CHECKS"
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "rootRunId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "turnId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "planId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "taskId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "registrationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "attemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "childRunId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "taskDefinitionDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "requirementsDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "registryDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "checksDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "upstreamInputDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "workspaceBeforeDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "workspaceAfterDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "imageDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policyDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "verifierSourceDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "taskVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "fencingToken": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "projectId",
+        "rootRunId",
+        "turnId",
+        "planId",
+        "taskId",
+        "registrationId",
+        "attemptId",
+        "childRunId",
+        "taskDefinitionDigest",
+        "requirementsDigest",
+        "registryDigest",
+        "checksDigest",
+        "upstreamInputDigest",
+        "workspaceBeforeDigest",
+        "workspaceAfterDigest",
+        "imageDigest",
+        "policyDigest",
+        "verifierSourceDigest",
+        "taskVersion",
+        "fencingToken"
+      ],
+      "additionalProperties": false
+    },
+    "childState": {
+      "type": "string",
+      "const": "COMPLETED"
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "checkRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "reportRef": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1048576
+        }
+      },
+      "required": [
+        "id",
+        "sha256",
+        "sizeBytes"
+      ],
+      "additionalProperties": false
+    },
+    "outputs": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1048576
+          }
+        },
+        "required": [
+          "id",
+          "sha256",
+          "sizeBytes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "exitCode": {
+          "type": "integer",
+          "minimum": -65536,
+          "maximum": 65536
+        },
+        "timedOut": {
+          "type": "boolean"
+        },
+        "cancelled": {
+          "type": "boolean"
+        },
+        "cleanupConfirmed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "exitCode",
+        "timedOut",
+        "cancelled",
+        "cleanupConfirmed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "version",
+    "mode",
+    "binding",
+    "childState",
+    "summary",
+    "checkRefs",
+    "reportRef",
+    "outputs",
+    "execution"
+  ],
+  "additionalProperties": false
+}

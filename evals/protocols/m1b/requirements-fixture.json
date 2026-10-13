@@ -1,0 +1,6 @@
+[
+  {
+    "source": "USER_FIXTURE",
+    "text": "Normalize lower-case slugs: Hello World, A--B, !!!, MiXeD__Case"
+  }
+]

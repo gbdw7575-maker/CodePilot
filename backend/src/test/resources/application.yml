@@ -1,0 +1,75 @@
+spring:
+  datasource:
+    # 全 PostgreSQL：测试也连真实 PG（测试专用库 dsh_test，ddl-auto=create-drop 每次重建）
+    # 需本地 PostgreSQL：CREATE DATABASE dsh_test; 凭据走环境变量，默认 dsh/dsh
+    url: ${DB_TEST_URL:jdbc:postgresql://localhost:5432/dsh_test}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_TEST_USER:dsh}
+    password: ${DB_TEST_PASSWORD:dsh}
+    hikari:
+      # 全量回归多 ApplicationContext 上下文各建池，池小防打满 PG max_connections
+      maximum-pool-size: 4
+      minimum-idle: 1
+      connection-timeout: 30000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+  jackson:
+    # 与主配置一致：固定 DTO 拒绝未知字段
+    deserialization:
+      fail-on-unknown-properties: true
+
+dsh:
+  contract-version: 0.1.0-design
+  security:
+    allowed-roots: []
+  budget:
+    max-model-requests: 24
+    max-tool-calls: 80
+    max-cumulative-tokens: 200000
+    deadline-minutes: 20
+  loop:
+    # 测试使用同步调度：submit/append 返回时事件与终态已确定，可复现
+    synchronous: true
+  workspace:
+    root: target/test-workspaces
+  sandbox:
+    # 测试不依赖 Docker 守护进程：本地真实进程执行，语义（超时/清理/有界日志）一致
+    mode: local
+    image: dsh-sandbox:latest
+    memory: 512m
+    cpus: "2.0"
+    default-timeout-seconds: 60
+    max-timeout-seconds: 600
+    output-limit-bytes: 262144
+  tool-search:
+    # 测试开启 tool_search 元工具以覆盖发现/挂载/授权过滤路径
+    enabled: true
+    rrf-k: 60
+    max-results: 5
+    max-searches-per-run: 5
+    vector-enabled: true
+    min-bm25-score: 0.5
+  memory:
+    enabled: true
+    read-enabled: true
+    write-enabled: true
+    rules-file: AGENTS.md
+    index-max-lines: 200
+    index-max-bytes: 25000
+  orchestration:
+    # 测试开启子 Agent/编排以覆盖预算分账、取消传播、汇合冲突路径
+    enabled: true
+    max-depth: 2
+    sub-max-model-requests: 8
+    sub-max-tool-calls: 30
+    sub-max-tokens: 60000
+    sub-timeout-seconds: 600
+    worker-can-spawn: false
+  rag:
+    # 测试默认关闭 RAG（索引需要 sources 目录存在，冒烟测试单独开启）
+    enabled: false
+    cosine-floor: 0.55
+    max-searches-per-run: 3
+    bm25-min-hits: 3

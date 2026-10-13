@@ -1,0 +1,25 @@
+{
+  "name": "dsh-frontend",
+  "private": true,
+  "version": "0.1.0-SNAPSHOT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test:event-replay": "node scripts/verify-event-pagination.mjs",
+    "preview": "vite preview",
+    "gen:api": "openapi-typescript \"../doc/项目文档/openapi.json\" -o src/api/schema.d.ts"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "openapi-typescript": "^7.9.0",
+    "typescript": "~5.9.0",
+    "vite": "^7.1.0"
+  }
+}

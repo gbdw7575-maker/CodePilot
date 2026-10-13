@@ -1,0 +1,19 @@
+package com.dsh.api.dto;
+
+/** 与 openapi.json 的 components/schemas/StopReason 一致。 */
+public enum StopReason {
+    ANSWER_COMPLETE,
+    VERIFICATION_PASSED,
+    VERIFICATION_FAILED,
+    VERIFICATION_UNAVAILABLE,
+    VERIFICATION_STALE,
+    COMPLETION_REVIEW_LIMIT,
+    COMPLETION_REVIEW_REQUIRED,
+    BUDGET_LIMIT,
+    CONTEXT_LIMIT,
+    USER_CANCELLED,
+    PROVIDER_ERROR,
+    TOOL_ERROR,
+    ENVIRONMENT_ERROR,
+    RECOVERY_REQUIRED
+}

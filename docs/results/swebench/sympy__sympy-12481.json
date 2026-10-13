@@ -1,0 +1,10 @@
+{
+  "instance_id": "sympy__sympy-12481",
+  "status": "unresolved",
+  "resolved": false,
+  "patch_exists": true,
+  "patch_successfully_applied": false,
+  "tests_status": null,
+  "source_run": "ext-b01sym",
+  "source_report_sha256": "5c4023109f3dfefbbbe7439e3e4f7329d3f6433d5276935e506ab01cb0b8df69"
+}

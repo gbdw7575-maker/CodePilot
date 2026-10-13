@@ -1,0 +1,4 @@
+org.springframework.test.context.ContextCustomizerFactory=\
+com.dsh.testsupport.SchemaIsolationContextCustomizerFactory
+org.springframework.test.context.TestExecutionListener=\
+com.dsh.testsupport.DirtyContextAfterOrchestrationTestListener

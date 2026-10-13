@@ -1,0 +1,4367 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DSH WebSocket 客户端/服务端帧与持久化事件",
+  "description": "选择 $defs.WsClientFrame、WsServerFrame 或 EventEnvelope 验证；顶层允许三者之一。",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/WsClientFrame"
+    },
+    {
+      "$ref": "#/$defs/WsServerFrame"
+    },
+    {
+      "$ref": "#/$defs/EventEnvelope"
+    }
+  ],
+  "$defs": {
+    "WsClientFrame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "subscribe"
+            },
+            "threadId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "afterSequence": {
+              "type": "string",
+              "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          "required": [
+            "type",
+            "threadId",
+            "afterSequence"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "WsServerFrame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "ready"
+            },
+            "threadId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "highWatermark": {
+              "type": "string",
+              "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          "required": [
+            "type",
+            "threadId",
+            "highWatermark"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "event"
+            },
+            "event": {
+              "$ref": "#/$defs/EventEnvelope"
+            }
+          },
+          "required": [
+            "type",
+            "event"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "caught_up"
+            },
+            "threadId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "throughSequence": {
+              "type": "string",
+              "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          "required": [
+            "type",
+            "threadId",
+            "throughSequence"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "resync_required"
+            },
+            "threadId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "earliestAvailableSequence": {
+              "type": "string",
+              "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
+            "highWatermark": {
+              "type": "string",
+              "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          "required": [
+            "type",
+            "threadId",
+            "earliestAvailableSequence",
+            "highWatermark"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "error"
+            },
+            "error": {
+              "$ref": "#/$defs/ApiError"
+            }
+          },
+          "required": [
+            "type",
+            "error"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "EventEnvelope": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Event_run_state_changed"
+        },
+        {
+          "$ref": "#/$defs/Event_run_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_run_failed"
+        },
+        {
+          "$ref": "#/$defs/Event_run_cancelled"
+        },
+        {
+          "$ref": "#/$defs/Event_run_input_applied"
+        },
+        {
+          "$ref": "#/$defs/Event_assistant_text_delta"
+        },
+        {
+          "$ref": "#/$defs/Event_assistant_message_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_model_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_tool_started"
+        },
+        {
+          "$ref": "#/$defs/Event_tool_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_tool_discovery_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_approval_requested"
+        },
+        {
+          "$ref": "#/$defs/Event_approval_resolved"
+        },
+        {
+          "$ref": "#/$defs/Event_memory_changed"
+        },
+        {
+          "$ref": "#/$defs/Event_checkpoint_created"
+        },
+        {
+          "$ref": "#/$defs/Event_verification_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_plan_updated"
+        },
+        {
+          "$ref": "#/$defs/Event_task_dispatched"
+        },
+        {
+          "$ref": "#/$defs/Event_task_state_changed"
+        },
+        {
+          "$ref": "#/$defs/Event_task_result_ready"
+        },
+        {
+          "$ref": "#/$defs/Event_run_waiting_tasks"
+        },
+        {
+          "$ref": "#/$defs/Event_integration_completed"
+        },
+        {
+          "$ref": "#/$defs/Event_integration_failed"
+        }
+      ]
+    },
+    "Event_run_state_changed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "run.state_changed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "from": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/RunState"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "to": {
+              "$ref": "#/$defs/RunState"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "from",
+            "to",
+            "version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "RunState": {
+      "type": "string",
+      "enum": [
+        "QUEUED",
+        "PREPARING",
+        "RUNNING",
+        "WAITING_APPROVAL",
+        "WAITING_INPUT",
+        "VERIFYING",
+        "CANCELLING",
+        "RECOVERING",
+        "BLOCKED",
+        "COMPLETED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "Event_run_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "run.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "const": "COMPLETED"
+            },
+            "verificationStatus": {
+              "type": "string",
+              "enum": [
+                "PASSED",
+                "NOT_REQUIRED"
+              ]
+            },
+            "completionBasis": {
+              "$ref": "#/$defs/CompletionBasis"
+            },
+            "summary": {
+              "type": "string"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "state",
+            "verificationStatus",
+            "completionBasis",
+            "summary",
+            "version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "CompletionBasis": {
+      "type": "string",
+      "enum": [
+        "VERIFICATION_PASSED",
+        "NO_CHANGE",
+        "NO_NET_CHANGE_AFTER_WRITE"
+      ]
+    },
+    "Event_run_failed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "run.failed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "const": "FAILED"
+            },
+            "reason": {
+              "$ref": "#/$defs/StopReason"
+            },
+            "message": {
+              "type": "string"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "state",
+            "reason",
+            "message",
+            "version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "StopReason": {
+      "type": "string",
+      "enum": [
+        "ANSWER_COMPLETE",
+        "VERIFICATION_PASSED",
+        "VERIFICATION_FAILED",
+        "VERIFICATION_UNAVAILABLE",
+        "VERIFICATION_STALE",
+        "COMPLETION_REVIEW_LIMIT",
+        "COMPLETION_REVIEW_REQUIRED",
+        "BUDGET_LIMIT",
+        "CONTEXT_LIMIT",
+        "USER_CANCELLED",
+        "PROVIDER_ERROR",
+        "TOOL_ERROR",
+        "ENVIRONMENT_ERROR",
+        "RECOVERY_REQUIRED"
+      ]
+    },
+    "Event_run_cancelled": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "run.cancelled"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "state": {
+              "const": "CANCELLED"
+            },
+            "reason": {
+              "const": "USER_CANCELLED"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "state",
+            "reason",
+            "version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_run_input_applied": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "run.input_applied"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "messageId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "attempt": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "messageId",
+            "attempt"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_assistant_text_delta": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "assistant.text.delta"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "messageId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "messageId",
+            "index",
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_assistant_message_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "assistant.message.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "messageId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "content": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "messageId",
+            "content"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_model_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "model.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "modelRequested": {
+              "type": "string"
+            },
+            "modelReturned": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "finishReason": {
+              "type": "string"
+            },
+            "durationMs": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "usage": {
+              "$ref": "#/$defs/Usage"
+            }
+          },
+          "required": [
+            "modelRequested",
+            "modelReturned",
+            "finishReason",
+            "durationMs",
+            "usage"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Usage": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "KNOWN",
+            "ESTIMATED",
+            "UNKNOWN"
+          ]
+        },
+        "inputTokens": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outputTokens": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cacheHitTokens": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cacheMissTokens": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cost": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "十进制定点字符串，不使用浮点累计",
+              "pattern": "^[0-9]+(\\.[0-9]+)?$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "priceVersion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "inputTokens",
+        "outputTokens",
+        "cacheHitTokens",
+        "cacheMissTokens",
+        "cost",
+        "currency",
+        "priceVersion"
+      ],
+      "additionalProperties": false
+    },
+    "Event_tool_started": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "tool.started"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "callId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "argumentsSummary": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "callId",
+            "name",
+            "argumentsSummary"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_tool_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "tool.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "callId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "result": {
+              "$ref": "#/$defs/ToolOutcome"
+            }
+          },
+          "required": [
+            "callId",
+            "name",
+            "result"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "ToolOutcome": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "SUCCEEDED",
+            "FAILED",
+            "DENIED",
+            "CANCELLED",
+            "UNKNOWN",
+            "SKIPPED"
+          ]
+        },
+        "errorCode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ContentBlock"
+          }
+        },
+        "structuredContent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifactIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "服务端分配的不透明标识；客户端不得解析",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exitCode": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isError": {
+          "type": "boolean"
+        },
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "errorCode",
+        "summary",
+        "content",
+        "structuredContent",
+        "artifactIds",
+        "truncated",
+        "durationMs",
+        "exitCode",
+        "isError",
+        "callId",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "ContentBlock": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "artifact"
+            },
+            "artifactId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "mimeType": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "unsupported": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "artifactId",
+            "mimeType",
+            "description",
+            "unsupported"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Event_tool_discovery_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "tool.discovery.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string"
+            },
+            "loadedNames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "catalogVersion": {
+              "type": "string"
+            },
+            "degraded": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "query",
+            "loadedNames",
+            "catalogVersion",
+            "degraded"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_approval_requested": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "approval.requested"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "toolCallId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "expiresAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "approvalId",
+            "toolCallId",
+            "expiresAt"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_approval_resolved": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "approval.resolved"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "APPROVED",
+                "DENIED",
+                "EXPIRED",
+                "INVALIDATED"
+              ]
+            }
+          },
+          "required": [
+            "approvalId",
+            "status"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_memory_changed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "memory.changed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "memoryId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "CREATED",
+                "UPDATED",
+                "DELETED"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "memoryId",
+            "action",
+            "version"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_checkpoint_created": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "checkpoint.created"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "checkpointId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "workspaceDigest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "checkpointId",
+            "workspaceDigest"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_verification_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "verification.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "verificationId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "status": {
+              "$ref": "#/$defs/VerificationStatus"
+            },
+            "workspaceDigest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "preVerificationDigest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "workspaceModified": {
+              "type": "boolean"
+            },
+            "stale": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "verificationId",
+            "status",
+            "workspaceDigest",
+            "preVerificationDigest",
+            "workspaceModified",
+            "stale"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "VerificationStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "PASSED",
+        "FAILED",
+        "UNVERIFIED",
+        "ENV_ERROR",
+        "NOT_REQUIRED"
+      ]
+    },
+    "Event_plan_updated": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "plan.updated"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "planId",
+            "revision"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_task_dispatched": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "task.dispatched"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "taskId": {
+              "type": "string",
+              "description": "计划内任务逻辑标识",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "taskVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "attemptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "服务端分配的不透明标识；客户端不得解析",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "$ref": "#/$defs/TaskState"
+            }
+          },
+          "required": [
+            "planId",
+            "taskId",
+            "taskVersion",
+            "attemptId",
+            "state"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "TaskState": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "PENDING",
+        "READY",
+        "RUNNING",
+        "VERIFYING",
+        "WAITING_APPROVAL",
+        "BLOCKED",
+        "FAILED",
+        "CANCELLING",
+        "CANCELLED",
+        "SUCCEEDED"
+      ]
+    },
+    "Event_task_state_changed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "task.state.changed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "taskId": {
+              "type": "string",
+              "description": "计划内任务逻辑标识",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "taskVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "attemptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "服务端分配的不透明标识；客户端不得解析",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "childRunId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "服务端分配的不透明标识；客户端不得解析",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "from": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TaskState"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "to": {
+              "$ref": "#/$defs/TaskState"
+            },
+            "reasonCode": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "planId",
+            "taskId",
+            "taskVersion",
+            "attemptId",
+            "childRunId",
+            "from",
+            "to",
+            "reasonCode"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_task_result_ready": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "task.result.ready"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "taskId": {
+              "type": "string",
+              "description": "计划内任务逻辑标识",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "taskVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "attemptId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "childRunId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "服务端分配的不透明标识；客户端不得解析",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "SUCCEEDED",
+                "FAILED",
+                "CANCELLED"
+              ]
+            },
+            "artifactRefs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "服务端分配的不透明标识；客户端不得解析",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              }
+            },
+            "verificationRef": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "服务端分配的不透明标识；客户端不得解析",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "inputDigest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "outputDigest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "planId",
+            "taskId",
+            "taskVersion",
+            "attemptId",
+            "childRunId",
+            "state",
+            "artifactRefs",
+            "verificationRef",
+            "inputDigest",
+            "outputDigest"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_run_waiting_tasks": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "run.waiting_tasks"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "taskIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "计划内任务逻辑标识",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "waitMode": {
+              "type": "string",
+              "enum": [
+                "ANY",
+                "ALL"
+              ]
+            },
+            "cursor": {
+              "type": "string",
+              "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
+            "waitUntil": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "taskIds",
+            "waitMode",
+            "cursor",
+            "waitUntil"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_integration_completed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "integration.completed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "integrationId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "state": {
+              "const": "APPLIED"
+            },
+            "resultDigest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "integrationId",
+            "state",
+            "resultDigest",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "Event_integration_failed": {
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "threadId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parentRunId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spanId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sequence": {
+          "type": "string",
+          "description": "十进制字符串；比较时用 BigInt，非 JavaScript Number",
+          "pattern": "^[1-9][0-9]*$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "type": {
+          "const": "integration.failed"
+        },
+        "payload": {
+          "type": "object",
+          "properties": {
+            "integrationId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "description": "集成记录标识；父工作区租约缺失等未落库失败时为 null",
+                  "pattern": "^intg_[A-Za-z0-9_-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "CONFLICTS",
+                "RECOVERED_BLOCKED",
+                "FAILED"
+              ]
+            },
+            "resultDigest": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "integrationId",
+            "state",
+            "resultDigest",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "eventId",
+        "projectId",
+        "threadId",
+        "turnId",
+        "runId",
+        "parentRunId",
+        "traceId",
+        "spanId",
+        "sequence",
+        "timestamp",
+        "schemaVersion",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "ApiError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "message": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "requestId",
+        "retryable",
+        "details"
+      ],
+      "additionalProperties": false
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "VALIDATION_FAILED",
+        "INVALID_CURSOR",
+        "INVALID_INPUT",
+        "INPUT_TOO_LARGE",
+        "RESOURCE_NOT_FOUND",
+        "ORIGIN_DENIED",
+        "PERMISSION_DENIED",
+        "PROJECT_NOT_TRUSTED",
+        "PATH_OUTSIDE_WORKSPACE",
+        "CREDENTIAL_UNAVAILABLE",
+        "MODEL_CAPABILITY_UNVERIFIED",
+        "ACTIVE_TURN_EXISTS",
+        "RESOURCE_BUSY",
+        "INVALID_STATE",
+        "IDEMPOTENCY_CONFLICT",
+        "IDEMPOTENCY_IN_PROGRESS",
+        "PRECONDITION_REQUIRED",
+        "VERSION_CONFLICT",
+        "APPROVAL_STALE",
+        "APPROVAL_ALREADY_DECIDED",
+        "WORKSPACE_CONFLICT",
+        "EVENT_CURSOR_EXPIRED",
+        "MEMORY_DISABLED",
+        "RATE_LIMITED",
+        "PROVIDER_UNAVAILABLE",
+        "SERVICE_UNAVAILABLE",
+        "INTERNAL_ERROR"
+      ]
+    }
+  }
+}

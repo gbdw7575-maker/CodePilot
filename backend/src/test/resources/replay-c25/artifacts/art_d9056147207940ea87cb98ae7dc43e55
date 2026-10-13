@@ -1,0 +1,104 @@
+Saved working directory and index state WIP on master: cab2d9307 Merge pull request #10386 from mxd4/10384-comment-img-magick
+============================= test session starts ==============================
+platform linux -- Python 3.9.20, pytest-8.3.3, pluggy-1.5.0
+libraries: Sphinx-5.0.0b1, docutils-0.18.1
+base tempdir: /tmp/pytest-of-dsh/pytest-0
+rootdir: /workspace
+configfile: setup.cfg
+collected 9 items / 7 deselected / 2 selected
+
+tests/test_build_gettext.py FF                                           [100%]
+
+=================================== FAILURES ===================================
+__________________ test_build_gettext_no_duplicated_locations __________________
+
+app = <SphinxTestApp buildername='gettext'>
+
+    @pytest.mark.sphinx('gettext', srcdir='root-gettext')
+    def test_build_gettext_no_duplicated_locations(app):
+        # regression test for #10385
+        app.builder.build_all()
+    
+        # duplicated locations are removed from each message
+        with (app.outdir / 'markup.pot').open(encoding='utf8') as f:
+            catalog = babel.messages.pofile.read_po(f)
+        for message in catalog:
+            locations = message.locations
+            assert len(locations) == len(set(locations))
+    
+        # duplicated locations are removed from the raw contents too
+        pot = (app.outdir / 'markup.pot').read_text(encoding='utf8')
+        for block in pot.split('\n\n'):
+            locations = [line for line in block.splitlines() if line.startswith('#: ')]
+>           assert len(locations) == len(set(locations))
+E           AssertionError: assert 2 == 1
+E            +  where 2 = len(['#: ../../markup.txt:215', '#: ../../markup.txt:215'])
+E            +  and   1 = len({'#: ../../markup.txt:215'})
+E            +    where {'#: ../../markup.txt:215'} = set(['#: ../../markup.txt:215', '#: ../../markup.txt:215'])
+
+tests/test_build_gettext.py:48: AssertionError
+--------------------------- Captured stdout teardown ---------------------------
+# testroot: root
+# builder: gettext
+# srcdir: /tmp/pytest-of-dsh/pytest-0/root-gettext
+# outdir: /tmp/pytest-of-dsh/pytest-0/root-gettext/_build/gettext
+# status: 
+[01mRunning Sphinx v5.0.0b1[39;49;00m
+[01mbuilding [gettext]: [39;49;00mtargets for 3 template files
+[01mreading templates... [39;49;00m[ 33%] [35m/tmp/pytest-of-dsh/pytest-0/root-gettext/_templates/contentssb.html[39;49;00m[01mreading templates... [39;49;00m[ 66%] [35m/tmp/pytest-of-dsh/pytest-0/root-gettext/_templates/customsb.html[39;49;00m[01mreading templates... [39;49;00m[100%] [35m/tmp/pytest-of-dsh/pytest-0/root-gettext/_templates/layout.html[39;49;00m
+[01mbuilding [gettext]: [39;49;00mall source files
+[01mupdating environment: [39;49;00m[new config] 15 added, 0 changed, 0 removed
+[01mreading sources... [39;49;00m[  6%] [35mautodoc[39;49;00m                                              [01mreading sources... [39;49;00m[ 13%] [35mbom[39;49;00m                                                  [01mreading sources... [39;49;00m[ 20%] [35mextapi[39;49;00m                                               [01mreading sources... [39;49;00m[ 26%] [35mextensions[39;49;00m                                           [01mreading sources... [39;49;00m[ 33%] [35mfootnote[39;49;00m                                             [01mreading sources... [39;49;00m[ 40%] [35mimages[39;49;00m                                               [01mreading sources... [39;49;00m[ 46%] [35mincludes[39;49;00m                                             [01mreading sources... [39;49;00m[ 53%] [35mindex[39;49;00m                                                [01mreading sources... [39;49;00m[ 60%] [35mlists[39;49;00m                                                [01mreading sources... [39;49;00m[ 66%] [35mmarkup[39;49;00m                                               [01mreading sources... [39;49;00m[ 73%] [35mmath[39;49;00m                                                 [01mreading sources... [39;49;00m[ 80%] [35mobjects[39;49;00m                                              [01mreading sources... [39;49;00m[ 86%] [35motherext[39;49;00m                                             [01mreading sources... [39;49;00m[ 93%] [35msubdir/images[39;49;00m                                        [01mreading sources... [39;49;00m[100%] [35msubdir/includes[39;49;00m                                      
+[01mlooking for now-outdated files... [39;49;00mnone found
+[01mpickling environment... [39;49;00mdone
+[01mchecking consistency... [39;49;00mdone
+[01mpreparing documents... [39;49;00mdone
+[01mwriting output... [39;49;00m[  6%] [32mautodoc[39;49;00m                                               [01mwriting output... [39;49;00m[ 13%] [32mbom[39;49;00m                                                   [01mwriting output... [39;49;00m[ 20%] [32mextapi[39;49;00m                                                [01mwriting output... [39;49;00m[ 26%] [32mextensions[39;49;00m                                            [01mwriting output... [39;49;00m[ 33%] [32mfootnote[39;49;00m                                              [01mwriting output... [39;49;00m[ 40%] [32mimages[39;49;00m                                                [01mwriting output... [39;49;00m[ 46%] [32mincludes[39;49;00m                                              [01mwriting output... [39;49;00m[ 53%] [32mindex[39;49;00m                                                 [01mwriting output... [39;49;00m[ 60%] [32mlists[39;49;00m                                                 [01mwriting output... [39;49;00m[ 66%] [32mmarkup[39;49;00m                                                [01mwriting output... [39;49;00m[ 73%] [32mmath[39;49;00m                                                  [01mwriting output... [39;49;00m[ 80%] [32mobjects[39;49;00m                                               [01mwriting output... [39;49;00m[ 86%] [32motherext[39;49;00m                                              [01mwriting output... [39;49;00m[ 93%] [32msubdir/images[39;49;00m                                         [01mwriting output... [39;49;00m[100%] [32msubdir/includes[39;49;00m                                       
+[01mwriting message catalogs... [39;49;00m[  7%] [32mautodoc[39;49;00m                                     [01mwriting message catalogs... [39;49;00m[ 14%] [32mbom[39;49;00m                                         [01mwriting message catalogs... [39;49;00m[ 21%] [32mextapi[39;49;00m                                      [01mwriting message catalogs... [39;49;00m[ 28%] [32mextensions[39;49;00m                                  [01mwriting message catalogs... [39;49;00m[ 35%] [32mfootnote[39;49;00m                                    [01mwriting message catalogs... [39;49;00m[ 42%] [32mimages[39;49;00m                                      [01mwriting message catalogs... [39;49;00m[ 50%] [32mincludes[39;49;00m                                    [01mwriting message catalogs... [39;49;00m[ 57%] [32mindex[39;49;00m                                       [01mwriting message catalogs... [39;49;00m[ 64%] [32mlists[39;49;00m                                       [01mwriting message catalogs... [39;49;00m[ 71%] [32mmarkup[39;49;00m                                      [01mwriting message catalogs... [39;49;00m[ 78%] [32mmath[39;49;00m                                        [01mwriting message catalogs... [39;49;00m[ 85%] [32mobjects[39;49;00m                                     [01mwriting message catalogs... [39;49;00m[ 92%] [32motherext[39;49;00m                                    [01mwriting message catalogs... [39;49;00m[100%] [32msubdir[39;49;00m                                      
+
+# warning: 
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class:1: WARNING: duplicate object description of autodoc_target.Class, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.attr:1: WARNING: duplicate object description of autodoc_target.Class.attr, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.descr:1: WARNING: duplicate object description of autodoc_target.Class.descr, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.docattr:1: WARNING: duplicate object description of autodoc_target.Class.docattr, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.excludemeth:1: WARNING: duplicate object description of autodoc_target.Class.excludemeth, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.inst_attr_comment:1: WARNING: duplicate object description of autodoc_target.Class.inst_attr_comment, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.inst_attr_inline:1: WARNING: duplicate object description of autodoc_target.Class.inst_attr_inline, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.inst_attr_string:1: WARNING: duplicate object description of autodoc_target.Class.inst_attr_string, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.mdocattr:1: WARNING: duplicate object description of autodoc_target.Class.mdocattr, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.meth:1: WARNING: duplicate object description of autodoc_target.Class.meth, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.moore:1: WARNING: duplicate object description of autodoc_target.Class.moore, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.prop:1: WARNING: duplicate object description of autodoc_target.Class.prop, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.skipmeth:1: WARNING: duplicate object description of autodoc_target.Class.skipmeth, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.udocattr:1: WARNING: duplicate object description of autodoc_target.Class.udocattr, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.Class.docattr:1: WARNING: duplicate object description of autodoc_target.Class.docattr, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.InstAttCls:1: WARNING: duplicate object description of autodoc_target.InstAttCls, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.InstAttCls.ca1:1: WARNING: duplicate object description of autodoc_target.InstAttCls.ca1, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/autodoc_target.py:docstring of autodoc_target.InstAttCls.ia1:1: WARNING: duplicate object description of autodoc_target.InstAttCls.ia1, other instance in autodoc, use :noindex: for one of them[39;49;00m
+[91m/tmp/pytest-of-dsh/pytest-0/root-gettext/objects.txt:143: WARNING: Unparseable C cross-reference: 'SphinxType *'
+Invalid C declaration: Expected end of definition. [error at 11]
+  SphinxType *
+  -----------^[39;49;00m
+
+__________________ test_catalog_removes_duplicated_locations ___________________
+
+    def test_catalog_removes_duplicated_locations():
+        # regression test for #10385
+        catalog = Catalog()
+        catalog.add('message', MsgOrigin('source.rst', 1))
+        catalog.add('message', MsgOrigin('source.rst', 1))
+        catalog.add('message', MsgOrigin('other.rst', 2))
+    
+        message = next(iter(catalog))
+>       assert message.locations == [('source.rst', 1), ('other.rst', 2)]
+E       AssertionError: assert [('source.rst...ther.rst', 2)] == [('source.rst...ther.rst', 2)]
+E         
+E         At index 1 diff: ('source.rst', 1) != ('other.rst', 2)
+E         Left contains one more item: ('other.rst', 2)
+E         Use -v to get more diff
+
+tests/test_build_gettext.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_build_gettext.py::test_build_gettext_no_duplicated_locations
+FAILED tests/test_build_gettext.py::test_catalog_removes_duplicated_locations
+======================= 2 failed, 7 deselected in 3.08s ========================

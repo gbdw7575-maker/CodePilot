@@ -1,0 +1,19 @@
+[
+  {
+    "input": {
+      "z": "验收",
+      "a": [
+        1,
+        true,
+        null
+      ]
+    },
+    "expectedUtf8": "{\"a\":[1,true,null],\"z\":\"验收\"}",
+    "sha256": "7d426823391f40efbc6d8fc0148f18d94aed8e7307f1d2859bb39c2f5d501618"
+  },
+  {
+    "input": [],
+    "expectedUtf8": "[]",
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  }
+]

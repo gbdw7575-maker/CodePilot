@@ -1,0 +1,21 @@
+{
+  "taskId": "taskId_fixture",
+  "taskVersion": 1,
+  "goal": "Normalize slugs according to the four confirmed cases",
+  "acceptance": [
+    "Lower case and collapse non-alphanumeric separators; strip outer separators"
+  ],
+  "deliverable": "app.py",
+  "dependsOn": [],
+  "inputRefs": [],
+  "resourceScope": {
+    "read": [
+      "app.py"
+    ],
+    "write": [
+      "app.py"
+    ]
+  },
+  "executionMode": "CHILD_AGENT",
+  "required": true
+}

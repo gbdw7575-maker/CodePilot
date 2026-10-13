@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-04",
+  "historical_jar_sha256": "3c4f886f4c89bea1075caa93531bc86324d6d2f9930f261148eac4734f89fd7e",
+  "tests": {
+    "mode": "optimized-final",
+    "tests": 128,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": 7
+  },
+  "docker_fence_controls": {
+    "passed": 6,
+    "total": 6
+  },
+  "pilot": [
+    {
+      "strategy": "SINGLE",
+      "rootFacts": {
+        "state": "COMPLETED",
+        "stop_reason": "VERIFICATION_PASSED",
+        "budget_model_requests_used": 10,
+        "budget_tool_calls_used": 14,
+        "budget_settled_tokens": 59887,
+        "usage_input_tokens": 57562,
+        "usage_output_tokens": 2325
+      },
+      "grading": {
+        "passed": true,
+        "exit": 0,
+        "parseError": "",
+        "counts": {
+          "discovered": 7,
+          "passed": 7,
+          "failures": 0,
+          "skipped": 0
+        }
+      },
+      "elapsedMs": 26914,
+      "successfulTasks": 0,
+      "committedReceipts": 0
+    },
+    {
+      "strategy": "MULTI",
+      "rootFacts": {
+        "state": "COMPLETED",
+        "stop_reason": "VERIFICATION_PASSED",
+        "budget_model_requests_used": 15,
+        "budget_tool_calls_used": 19,
+        "budget_settled_tokens": 63462,
+        "usage_input_tokens": null,
+        "usage_output_tokens": null
+      },
+      "grading": {
+        "passed": true,
+        "exit": 0,
+        "parseError": "",
+        "counts": {
+          "discovered": 7,
+          "passed": 7,
+          "failures": 0,
+          "skipped": 0
+        }
+      },
+      "elapsedMs": 1533563,
+      "successfulTasks": 2,
+      "committedReceipts": 2
+    }
+  ],
+  "scope": "Fixed two-independent-task runtime pilot; default-off; no multi-agent speed or statistical benefit claim",
+  "fee": null
+}

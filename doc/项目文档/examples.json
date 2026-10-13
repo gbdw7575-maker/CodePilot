@@ -1,0 +1,2752 @@
+{
+  "description": "正反例只验证契约，不表示运行态测试通过",
+  "cases": [
+    {
+      "schema": "SubmitTurn",
+      "valid": true,
+      "value": {
+        "input": "修复重复邮箱注册返回 500 的问题，期望返回 409。"
+      }
+    },
+    {
+      "schema": "SubmitTurn",
+      "valid": false,
+      "value": {
+        "input": "   "
+      }
+    },
+    {
+      "schema": "SubmitTurn",
+      "valid": false,
+      "value": {
+        "input": "修复问题",
+        "intent": "fix"
+      }
+    },
+    {
+      "schema": "TurnAccepted",
+      "valid": true,
+      "value": {
+        "turnId": "turn_example",
+        "rootRunId": "run_example",
+        "state": "QUEUED",
+        "eventsAfterSequence": "0"
+      }
+    },
+    {
+      "schema": "Run",
+      "valid": true,
+      "value": {
+        "id": "run_example",
+        "turnId": "turn_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "role": "MAIN",
+        "state": "QUEUED",
+        "verificationStatus": "PENDING",
+        "stopReason": null,
+        "attempt": 1,
+        "workspaceRef": "workspace_example",
+        "configDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "budget": {
+          "maxModelRequests": 24,
+          "modelRequestsUsed": 0,
+          "maxToolCalls": 80,
+          "toolCallsUsed": 0,
+          "maxCumulativeTokens": 200000,
+          "settledTokens": null,
+          "reservedTokens": 0,
+          "deadlineAt": "2026-09-22T08:20:00Z",
+          "usageStatus": "UNKNOWN"
+        },
+        "usage": {
+          "status": "UNKNOWN",
+          "inputTokens": null,
+          "outputTokens": null,
+          "cacheHitTokens": null,
+          "cacheMissTokens": null,
+          "cost": null,
+          "currency": null,
+          "priceVersion": null
+        },
+        "summary": null,
+        "completionBasis": null,
+        "version": 1,
+        "createdAt": "2026-09-22T08:00:00Z",
+        "updatedAt": "2026-09-22T08:00:00Z"
+      }
+    },
+    {
+      "schema": "ApprovalDecision",
+      "valid": true,
+      "value": {
+        "decision": "APPROVE",
+        "parametersDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "workspaceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "ApprovalDecision",
+      "valid": false,
+      "value": {
+        "decision": "APPROVE_ALL",
+        "parametersDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "workspaceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "ModelProfileWrite",
+      "valid": true,
+      "value": {
+        "name": "DeepSeek 开发",
+        "provider": "deepseek",
+        "model": "deepseek-flash",
+        "baseUrl": "https://api.deepseek.com",
+        "credentialRef": "DEEPSEEK_API_KEY",
+        "options": {
+          "thinking": "disabled",
+          "reasoningEffort": null,
+          "maxOutputTokens": 8192,
+          "streaming": false
+        }
+      }
+    },
+    {
+      "schema": "ModelProfileWrite",
+      "valid": true,
+      "value": {
+        "name": "OpenAI 兼容网关",
+        "provider": "openai-compat",
+        "model": "gpt-4o-mini",
+        "baseUrl": "http://127.0.0.1:8081/v1",
+        "credentialRef": null,
+        "options": {
+          "thinking": "disabled",
+          "reasoningEffort": null,
+          "maxOutputTokens": 8192,
+          "streaming": true
+        }
+      }
+    },
+    {
+      "schema": "ModelProfileWrite",
+      "valid": false,
+      "value": {
+        "apiKey": "example-forbidden-field"
+      }
+    },
+    {
+      "schema": "Usage",
+      "valid": true,
+      "value": {
+        "status": "UNKNOWN",
+        "inputTokens": null,
+        "outputTokens": null,
+        "cacheHitTokens": null,
+        "cacheMissTokens": null,
+        "cost": null,
+        "currency": null,
+        "priceVersion": null
+      }
+    },
+    {
+      "schema": "ApiError",
+      "valid": true,
+      "value": {
+        "code": "ACTIVE_TURN_EXISTS",
+        "message": "当前会话已有活动轮次",
+        "requestId": "req_example",
+        "retryable": false,
+        "details": {
+          "activeTurnId": "turn_example"
+        }
+      }
+    },
+    {
+      "schema": "WsClientFrame",
+      "valid": true,
+      "value": {
+        "type": "subscribe",
+        "threadId": "thread_example",
+        "afterSequence": "0"
+      }
+    },
+    {
+      "schema": "WsClientFrame",
+      "valid": false,
+      "value": {
+        "type": "subscribe",
+        "threadId": "thread_example",
+        "afterSequence": 0
+      }
+    },
+    {
+      "schema": "WsServerFrame",
+      "valid": true,
+      "value": {
+        "type": "ready",
+        "threadId": "thread_example",
+        "highWatermark": "10"
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_example",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": "span_example",
+        "sequence": "12",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "tool.started",
+        "payload": {
+          "callId": "call_example",
+          "name": "search_code",
+          "argumentsSummary": "query=register"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": false,
+      "value": {
+        "type": "run.completed",
+        "payload": {}
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_plan_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "20",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "plan.updated",
+        "payload": {
+          "planId": "plan_example",
+          "revision": 2
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_dispatch_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "21",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "task.dispatched",
+        "payload": {
+          "planId": "plan_example",
+          "taskId": "impl_fix",
+          "taskVersion": 1,
+          "attemptId": null,
+          "state": "PENDING"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_cancel_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "22",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "task.state.changed",
+        "payload": {
+          "planId": "plan_example",
+          "taskId": "impl_fix",
+          "taskVersion": 1,
+          "attemptId": "att_example",
+          "childRunId": "run_child_example",
+          "from": "RUNNING",
+          "to": "CANCELLING",
+          "reasonCode": "CANCEL_REQUESTED"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_result_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "23",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "task.result.ready",
+        "payload": {
+          "planId": "plan_example",
+          "taskId": "test_fix",
+          "taskVersion": 1,
+          "attemptId": "att_example_2",
+          "childRunId": "run_child_example",
+          "state": "SUCCEEDED",
+          "artifactRefs": [
+            "art_example"
+          ],
+          "verificationRef": "ver_example",
+          "inputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "outputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_waiting_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "24",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "run.waiting_tasks",
+        "payload": {
+          "taskIds": [
+            "impl_fix",
+            "test_fix"
+          ],
+          "waitMode": "ALL",
+          "cursor": "7",
+          "waitUntil": "2026-09-22T08:10:00Z"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": true,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_integration_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "25",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "integration.completed",
+        "payload": {
+          "integrationId": "intg_example",
+          "state": "APPLIED",
+          "resultDigest": null,
+          "message": "已应用 2 个任务的产物"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": false,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_bad_1",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "26",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "task.state.changed",
+        "payload": {
+          "planId": "plan_example",
+          "taskId": "impl_fix",
+          "taskVersion": 1,
+          "attemptId": null,
+          "childRunId": null,
+          "from": "RUNNING",
+          "reasonCode": "CANCEL_REQUESTED"
+        }
+      }
+    },
+    {
+      "schema": "EventEnvelope",
+      "valid": false,
+      "value": {
+        "schemaVersion": "1.0",
+        "eventId": "evt_bad_2",
+        "projectId": "project_example",
+        "threadId": "thread_example",
+        "turnId": "turn_example",
+        "runId": "run_example",
+        "parentRunId": null,
+        "traceId": "trace_example",
+        "spanId": null,
+        "sequence": "27",
+        "timestamp": "2026-09-22T08:00:00Z",
+        "type": "task.result.ready",
+        "payload": {
+          "planId": "plan_example",
+          "taskId": "test_fix",
+          "taskVersion": 1,
+          "attemptId": "att_example_2",
+          "childRunId": null,
+          "state": "DONE",
+          "artifactRefs": [],
+          "verificationRef": null,
+          "inputDigest": null,
+          "outputDigest": null
+        }
+      }
+    },
+    {
+      "schema": "PlanViewList",
+      "valid": true,
+      "value": {
+        "plans": [
+          {
+            "planId": "plan_example",
+            "rootRunId": "run_example",
+            "revision": 2,
+            "status": "DRAFT",
+            "goal": "修复重复邮箱注册返回 500",
+            "createdAt": "2026-09-22T08:00:00Z",
+            "updatedAt": "2026-09-22T08:00:00Z",
+            "tasks": [
+              {
+                "taskId": "impl_fix",
+                "taskVersion": 1,
+                "goal": "注册接口对重复邮箱返回 409",
+                "dependsOn": [],
+                "inputRefs": [],
+                "deliverable": "auth 模块补丁",
+                "acceptance": [
+                  "重复邮箱注册返回 409"
+                ],
+                "resourceScope": {
+                  "read": [
+                    "src/auth"
+                  ],
+                  "write": [
+                    "src/auth"
+                  ]
+                },
+                "executionMode": "DELEGATED",
+                "required": true,
+                "state": "CANCELLING",
+                "attemptId": "att_example",
+                "childRunId": "run_child_example",
+                "reasonCode": "CANCEL_REQUESTED",
+                "evidenceValid": false,
+                "result": null
+              },
+              {
+                "taskId": "test_fix",
+                "taskVersion": 1,
+                "goal": "补充重复邮箱注册测试",
+                "dependsOn": [
+                  "impl_fix"
+                ],
+                "inputRefs": [
+                  {
+                    "taskId": "impl_fix",
+                    "output": "patch"
+                  }
+                ],
+                "deliverable": "测试补丁",
+                "acceptance": [
+                  "新增测试通过"
+                ],
+                "resourceScope": null,
+                "executionMode": "DELEGATED",
+                "required": true,
+                "state": "SUCCEEDED",
+                "attemptId": "att_example_2",
+                "childRunId": "run_child_example",
+                "reasonCode": null,
+                "evidenceValid": true,
+                "result": {
+                  "attemptId": "att_example_2",
+                  "state": "SUCCEEDED",
+                  "errorCode": null,
+                  "errorMessage": null,
+                  "artifactRefs": [
+                    "art_example"
+                  ],
+                  "patchArtifactId": "art_patch_example",
+                  "outputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "inputDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "verificationRef": "ver_example",
+                  "modelRequestsUsed": 3,
+                  "toolCallsUsed": 5,
+                  "settledTokens": 1820,
+                  "durationMs": 4200
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "schema": "StopReason",
+      "valid": true,
+      "value": "VERIFICATION_STALE"
+    },
+    {
+      "schema": "StopReason",
+      "valid": false,
+      "value": "STALE_SUCCESS"
+    },
+    {
+      "schema": "StopReason",
+      "valid": true,
+      "value": "COMPLETION_REVIEW_LIMIT"
+    },
+    {
+      "schema": "StopReason",
+      "valid": true,
+      "value": "COMPLETION_REVIEW_REQUIRED"
+    },
+    {
+      "schema": "StopReason",
+      "valid": false,
+      "value": "REVIEW_IMPLICIT_SUCCESS"
+    },
+    {
+      "schema": "RunVerificationRequirement",
+      "valid": true,
+      "value": {
+        "purpose": "GENERAL"
+      }
+    },
+    {
+      "schema": "RunVerificationRequirement",
+      "valid": true,
+      "value": {
+        "purpose": "DEFECT_FIX",
+        "acceptanceDescription": "修复重复值",
+        "defectReproduction": {
+          "assertionId": "sample",
+          "fileName": "check.sh",
+          "content": "echo diagnostic",
+          "command": "sh \"$DSH_PROBE_FILE\""
+        }
+      }
+    },
+    {
+      "schema": "RunVerificationRequirement",
+      "valid": false,
+      "value": {
+        "purpose": "DEFECT_FIX"
+      }
+    },
+    {
+      "schema": "RunVerificationRequirement",
+      "valid": false,
+      "value": {
+        "purpose": "GENERAL",
+        "defectReproduction": {
+          "assertionId": "sample",
+          "fileName": "check.sh",
+          "content": "echo diagnostic",
+          "command": "sh \"$DSH_PROBE_FILE\""
+        }
+      }
+    },
+    {
+      "schema": "RunVerificationRequirement",
+      "valid": false,
+      "value": {
+        "purpose": "DEFECT_FIX",
+        "acceptanceDescription": " ",
+        "defectReproduction": {
+          "assertionId": "sample",
+          "fileName": "check.sh",
+          "content": "echo diagnostic",
+          "command": "sh \"$DSH_PROBE_FILE\""
+        }
+      }
+    },
+    {
+      "schema": "SubmitTurn",
+      "valid": true,
+      "value": {
+        "input": "修复重复值",
+        "verification": {
+          "purpose": "GENERAL"
+        },
+        "projectPlanDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "AppendTurnInput",
+      "valid": false,
+      "value": {
+        "input": "补充要求",
+        "verification": {
+          "purpose": "GENERAL"
+        }
+      }
+    },
+    {
+      "schema": "DefectReproductionDefinition",
+      "valid": false,
+      "value": {
+        "assertionId": "sample",
+        "fileName": "../check.sh",
+        "content": "echo diagnostic",
+        "command": "sh \"$DSH_PROBE_FILE\""
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": true,
+      "value": {
+        "format": "MAVEN_SUREFIRE",
+        "directories": [
+          "a/target/surefire-reports",
+          "b/target/surefire-reports"
+        ]
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": true,
+      "value": {
+        "format": "GRADLE",
+        "directories": [
+          "a/build/test-results/test",
+          "b/build/test-results/integrationTest"
+        ]
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": false,
+      "value": {
+        "format": "UNKNOWN",
+        "directories": [
+          "build/test-results/test"
+        ]
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": false,
+      "value": {
+        "format": "MAVEN_SUREFIRE",
+        "directories": []
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": false,
+      "value": {
+        "format": "MAVEN_SUREFIRE",
+        "directories": [
+          "../outside"
+        ]
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": false,
+      "value": {
+        "format": "MAVEN_SUREFIRE",
+        "directories": [
+          "/tmp/report"
+        ]
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": false,
+      "value": {
+        "format": "MAVEN_SUREFIRE",
+        "directories": [
+          "target/**"
+        ]
+      }
+    },
+    {
+      "schema": "TestReportSpec",
+      "valid": false,
+      "value": {
+        "format": "MAVEN_SUREFIRE",
+        "directories": [
+          "target/.git/report"
+        ]
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": true,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": true,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中中"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": true,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": true,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": " vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv "
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": true,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": " "
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": ""
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": " "
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "v\u0000x"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "\ud800"
+      }
+    },
+    {
+      "schema": "VerificationPlanView",
+      "valid": false,
+      "value": {
+        "command": "echo ok",
+        "expectTests": false,
+        "timeoutSeconds": 30,
+        "purpose": "GENERAL",
+        "acceptanceDescription": null,
+        "defectReproduction": null,
+        "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source": "PROJECT_CONFIGURATION",
+        "planVersion": "\udc00"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": true,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": "9007199254740993",
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "CONFIRMED",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": "9007199254740993",
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": "9007199254740993",
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registrationId": "reg_forged"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": "9007199254740993",
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": 9007199254740992,
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [
+            "拒绝错误密码"
+          ],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": "9007199254740993",
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": false,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckPreview",
+      "valid": false,
+      "value": {
+        "status": "PREVIEW_ONLY",
+        "projectId": "project_example",
+        "rootRunId": "run_example",
+        "turnId": "turn_example",
+        "planId": "plan_example",
+        "planRevision": 1,
+        "taskState": "DRAFT",
+        "task": {
+          "taskId": "A",
+          "taskVersion": 1,
+          "goal": "实现登录",
+          "acceptance": [],
+          "deliverable": "登录实现",
+          "dependsOn": [],
+          "inputRefs": [],
+          "resourceScope": null,
+          "executionMode": "DELEGATED",
+          "required": true
+        },
+        "requirements": [
+          {
+            "messageId": "msg_example",
+            "sequence": "9007199254740993",
+            "content": "保留用户原始需求\n与约束"
+          }
+        ],
+        "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "availableChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": true,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "CONFIRMED",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "registrationId": "reg_forged"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check",
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "check_0",
+          "check_1",
+          "check_2",
+          "check_3",
+          "check_4",
+          "check_5",
+          "check_6",
+          "check_7",
+          "check_8"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "echo passed"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckSelectionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionPreview",
+      "valid": true,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "execution": {
+          "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "canonicalDefinition": "{\"version\":\"dsh-task-execution-v1\"}",
+          "checks": [
+            {
+              "checkId": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
+              "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "executionSpecDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionPreview",
+      "valid": false,
+      "value": {
+        "status": "SELECTED_PREVIEW_ONLY",
+        "taskPreview": {
+          "status": "PREVIEW_ONLY",
+          "projectId": "project_example",
+          "rootRunId": "run_example",
+          "turnId": "turn_example",
+          "planId": "plan_example",
+          "planRevision": 1,
+          "taskState": "DRAFT",
+          "task": {
+            "taskId": "A",
+            "taskVersion": 1,
+            "goal": "实现登录",
+            "acceptance": [
+              "拒绝错误密码"
+            ],
+            "deliverable": "登录实现",
+            "dependsOn": [],
+            "inputRefs": [],
+            "resourceScope": null,
+            "executionMode": "DELEGATED",
+            "required": true
+          },
+          "requirements": [
+            {
+              "messageId": "msg_example",
+              "sequence": "9007199254740993",
+              "content": "保留用户原始需求\n与约束"
+            }
+          ],
+          "taskDefinitionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "requirementsDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "registryDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "imageDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "executionPolicyDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "availableChecks": [
+            {
+              "id": "login-check",
+              "argv": [
+                "python",
+                "/verifier/check.py"
+              ],
+              "timeoutSeconds": 30,
+              "expectTests": true,
+              "minPassed": 4,
+              "verifiers": [
+                {
+                  "path": "check.py",
+                  "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ]
+            }
+          ],
+          "previewDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "checkRefs": [
+          "login-check"
+        ],
+        "selectedChecks": [
+          {
+            "id": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "expectTests": true,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ]
+          }
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "selectionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "execution": null
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionView",
+      "valid": false,
+      "value": {
+        "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "canonicalDefinition": "{\"version\":\"dsh-task-execution-v1\"}",
+        "checks": [
+          {
+            "checkId": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ],
+            "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "executionSpecDigest": "invalid"
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionView",
+      "valid": false,
+      "value": {
+        "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "canonicalDefinition": "{\"version\":\"dsh-task-execution-v1\"}",
+        "checks": [],
+        "executionSpecDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionView",
+      "valid": false,
+      "value": {
+        "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "canonicalDefinition": "{\"version\":\"dsh-task-execution-v1\"}",
+        "checks": [
+          {
+            "checkId": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ],
+            "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "executionSpecDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "hostPath": "/tmp/control"
+      }
+    },
+    {
+      "schema": "TaskCheckExecutionView",
+      "valid": false,
+      "value": {
+        "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "canonicalDefinition": 123,
+        "checks": [
+          {
+            "checkId": "login-check",
+            "argv": [
+              "python",
+              "/verifier/check.py"
+            ],
+            "timeoutSeconds": 30,
+            "minPassed": 4,
+            "verifiers": [
+              {
+                "path": "check.py",
+                "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            ],
+            "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "executionSpecDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckRegistration",
+      "valid": true,
+      "value": {
+        "status": "REGISTERED",
+        "registrationId": "checkreg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "projectId": "project_one",
+        "rootRunId": "run_one",
+        "turnId": "turn_one",
+        "planId": "plan_one",
+        "taskId": "A",
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bindingDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observedPlanRevision": 1,
+        "recordedAt": "2026-09-22T08:00:00Z",
+        "executionSpecDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "schema": "TaskCheckRegistration",
+      "valid": false,
+      "value": {
+        "status": "REGISTERED",
+        "registrationId": "checkreg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "projectId": "project_one",
+        "rootRunId": "run_one",
+        "turnId": "turn_one",
+        "planId": "plan_one",
+        "taskId": "A",
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bindingDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observedPlanRevision": 1,
+        "recordedAt": "2026-09-22T08:00:00Z",
+        "executionSpecDigest": null
+      }
+    },
+    {
+      "schema": "ConfirmTaskChecks",
+      "valid": true,
+      "value": {
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "confirmed": true
+      }
+    },
+    {
+      "schema": "ConfirmTaskChecks",
+      "valid": false,
+      "value": {
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "confirmed": false
+      }
+    },
+    {
+      "schema": "ConfirmTaskChecks",
+      "valid": false,
+      "value": {
+        "taskVersion": 0,
+        "checkRefs": [
+          "login-check"
+        ],
+        "confirmed": true
+      }
+    },
+    {
+      "schema": "ConfirmTaskChecks",
+      "valid": false,
+      "value": {
+        "taskVersion": 1,
+        "checkRefs": [],
+        "confirmed": true
+      }
+    },
+    {
+      "schema": "ConfirmTaskChecks",
+      "valid": false,
+      "value": {
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check",
+          "login-check"
+        ],
+        "confirmed": true
+      }
+    },
+    {
+      "schema": "ConfirmTaskChecks",
+      "valid": false,
+      "value": {
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "confirmed": true,
+        "command": "echo passed"
+      }
+    },
+    {
+      "schema": "TaskCheckRegistration",
+      "valid": true,
+      "value": {
+        "status": "REGISTERED",
+        "registrationId": "checkreg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "projectId": "project_one",
+        "rootRunId": "run_one",
+        "turnId": "turn_one",
+        "planId": "plan_one",
+        "taskId": "A",
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bindingDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observedPlanRevision": 1,
+        "recordedAt": "2026-09-22T08:00:00Z"
+      }
+    },
+    {
+      "schema": "TaskCheckRegistration",
+      "valid": false,
+      "value": {
+        "status": "PASSED",
+        "registrationId": "checkreg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "projectId": "project_one",
+        "rootRunId": "run_one",
+        "turnId": "turn_one",
+        "planId": "plan_one",
+        "taskId": "A",
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bindingDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observedPlanRevision": 1,
+        "recordedAt": "2026-09-22T08:00:00Z"
+      }
+    },
+    {
+      "schema": "TaskCheckRegistration",
+      "valid": false,
+      "value": {
+        "status": "REGISTERED",
+        "registrationId": "fake",
+        "projectId": "project_one",
+        "rootRunId": "run_one",
+        "turnId": "turn_one",
+        "planId": "plan_one",
+        "taskId": "A",
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "checksDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "bindingDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observedPlanRevision": 1,
+        "recordedAt": "2026-09-22T08:00:00Z"
+      }
+    },
+    {
+      "schema": "TaskCheckRegistration",
+      "valid": false,
+      "value": {
+        "status": "REGISTERED",
+        "registrationId": "checkreg_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "projectId": "project_one",
+        "rootRunId": "run_one",
+        "turnId": "turn_one",
+        "planId": "plan_one",
+        "taskId": "A",
+        "taskVersion": 1,
+        "checkRefs": [
+          "login-check"
+        ],
+        "checksDigest": "wrong",
+        "bindingDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "snapshotDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "observedPlanRevision": 1,
+        "recordedAt": "2026-09-22T08:00:00Z"
+      }
+    },
+    {
+      "schema": "EnableTaskAcceptanceMode",
+      "valid": true,
+      "value": {
+        "mode": "EXECUTABLE_CHECKS",
+        "confirmed": true
+      }
+    },
+    {
+      "schema": "EnableTaskAcceptanceMode",
+      "valid": false,
+      "value": {
+        "mode": "LEGACY_COVERAGE_ONLY",
+        "confirmed": true
+      }
+    },
+    {
+      "schema": "EnableTaskAcceptanceMode",
+      "valid": false,
+      "value": {
+        "mode": "EXECUTABLE_CHECKS",
+        "confirmed": false
+      }
+    },
+    {
+      "schema": "EnableTaskAcceptanceMode",
+      "valid": false,
+      "value": {
+        "mode": "EXECUTABLE_CHECKS",
+        "confirmed": "true"
+      }
+    },
+    {
+      "schema": "EnableTaskAcceptanceMode",
+      "valid": false,
+      "value": {
+        "mode": "EXECUTABLE_CHECKS",
+        "confirmed": true,
+        "command": "echo passed"
+      }
+    },
+    {
+      "schema": "TaskAcceptanceModeView",
+      "valid": true,
+      "value": {
+        "rootRunId": "run_example",
+        "mode": "UNFROZEN",
+        "frozen": false,
+        "optInAvailable": false,
+        "executionAvailable": false,
+        "frozenAt": null
+      }
+    },
+    {
+      "schema": "TaskAcceptanceModeView",
+      "valid": true,
+      "value": {
+        "rootRunId": "run_example",
+        "mode": "EXECUTABLE_CHECKS",
+        "frozen": true,
+        "optInAvailable": true,
+        "executionAvailable": false,
+        "frozenAt": "2026-10-03T00:00:00Z"
+      }
+    },
+    {
+      "schema": "TaskAcceptanceModeView",
+      "valid": true,
+      "value": {
+        "rootRunId": "run_example",
+        "mode": "EXECUTABLE_CHECKS",
+        "frozen": true,
+        "optInAvailable": true,
+        "executionAvailable": true,
+        "frozenAt": "2026-10-04T00:00:00Z"
+      }
+    },
+    {
+      "schema": "TaskAcceptanceModeView",
+      "valid": false,
+      "value": {
+        "rootRunId": "run_example",
+        "mode": "PASSED",
+        "frozen": true,
+        "optInAvailable": true,
+        "executionAvailable": false,
+        "frozenAt": "2026-10-03T00:00:00Z"
+      }
+    }
+  ]
+}

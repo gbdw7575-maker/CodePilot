@@ -1,0 +1,1938 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DSH 模型工具调用",
+  "description": "这些工具不是公开 HTTP 执行端点；超时、预算、工作区和权限由系统注入。",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "list_files"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "glob": {
+              "type": "string"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "read_file"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "startLine": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "endLine": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "forceFull": {
+              "type": "boolean",
+              "description": "true 时即使内容未变也重新返回正文（用于上下文压缩后重新查看）",
+              "default": false
+            }
+          },
+          "required": [
+            "path"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "read_artifact"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "artifactId": {
+              "type": "string",
+              "description": "当前 Run 返回的 art_* 引用",
+              "minLength": 5,
+              "maxLength": 128,
+              "pattern": "^art_[A-Za-z0-9_-]{1,124}$"
+            },
+            "byteOffset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "default": 0
+            },
+            "maxBytes": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 16384,
+              "default": 4096
+            }
+          },
+          "required": [
+            "artifactId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "search_code"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "字面串或正则；literal 为默认且大小写敏感",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "path": {
+              "type": "string",
+              "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "literal",
+                "regex"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "includeGlobs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "要包含的文件 glob",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "maxItems": 20
+            },
+            "excludeGlobs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "要排除的文件 glob",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "maxItems": 20
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "apply_patch"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "patch": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100000,
+              "pattern": "\\S"
+            },
+            "expectedFileHashes": {
+              "type": "object",
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "patch",
+            "expectedFileHashes"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "run_command"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100000,
+              "pattern": "\\S"
+            },
+            "workdir": {
+              "type": "string",
+              "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 600
+            }
+          },
+          "required": [
+            "command"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "run_probe"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "fileName": {
+              "type": "string",
+              "description": "安全单文件名，不允许目录或连续点",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,79}$"
+            },
+            "content": {
+              "type": "string",
+              "description": "UTF-8 探针源码",
+              "minLength": 1,
+              "maxLength": 16384
+            },
+            "command": {
+              "type": "string",
+              "description": "临时目录中执行的 Linux shell 命令",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 600
+            },
+            "allowRepeated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "fileName",
+            "content",
+            "command"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "git_status"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "git_diff"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "paths": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+                "minLength": 1,
+                "maxLength": 1024
+              }
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "update_plan"
+        },
+        "arguments": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "PENDING",
+                          "IN_PROGRESS",
+                          "DONE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "text",
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "steps"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "planId": {
+                  "type": "string",
+                  "description": "更新时与 expectedRevision 同填；创建时省略，由服务端分配 plan_*",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^plan_[A-Za-z0-9_-]+$"
+                },
+                "expectedRevision": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "goal": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000,
+                  "pattern": "\\S"
+                },
+                "tasks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "taskId": {
+                        "type": "string",
+                        "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "pattern": "^[A-Za-z0-9_-]+$"
+                      },
+                      "goal": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000,
+                        "pattern": "\\S"
+                      },
+                      "dependsOn": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64,
+                          "pattern": "^[A-Za-z0-9_-]+$"
+                        },
+                        "maxItems": 6
+                      },
+                      "inputRefs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "taskId": {
+                              "type": "string",
+                              "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                              "minLength": 1,
+                              "maxLength": 64,
+                              "pattern": "^[A-Za-z0-9_-]+$"
+                            },
+                            "output": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            }
+                          },
+                          "required": [
+                            "taskId",
+                            "output"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "maxItems": 8
+                      },
+                      "deliverable": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500,
+                        "pattern": "\\S"
+                      },
+                      "acceptance": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200,
+                          "pattern": "\\S"
+                        },
+                        "maxItems": 8
+                      },
+                      "resourceScope": {
+                        "type": "object",
+                        "properties": {
+                          "read": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "maxItems": 64
+                          },
+                          "write": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "maxItems": 64
+                          }
+                        },
+                        "required": [
+                          "read",
+                          "write"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "executionMode": {
+                        "type": "string",
+                        "enum": [
+                          "DELEGATED",
+                          "INLINE"
+                        ]
+                      },
+                      "required": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "taskId",
+                      "goal",
+                      "dependsOn",
+                      "deliverable",
+                      "acceptance",
+                      "executionMode",
+                      "required"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 12
+                }
+              },
+              "required": [
+                "tasks"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "tool_search"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "run_subagent"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "ARCHITECT",
+                "CODER",
+                "TESTER",
+                "REVIEWER"
+              ]
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100000,
+              "pattern": "\\S"
+            },
+            "artifactRefs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "服务端分配的不透明标识；客户端不得解析",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              }
+            }
+          },
+          "required": [
+            "role",
+            "task",
+            "artifactRefs"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "start_orchestration"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "goal": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100000,
+              "pattern": "\\S"
+            },
+            "template": {
+              "const": "coding-review"
+            },
+            "artifactRefs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "服务端分配的不透明标识；客户端不得解析",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              }
+            }
+          },
+          "required": [
+            "goal",
+            "template",
+            "artifactRefs"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "dispatch_tasks"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "planId": {
+              "type": "string",
+              "description": "当前根 Run 内已提交计划的 planId（expectedRevision 须与服务端当前修订一致）",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^plan_[A-Za-z0-9_-]+$"
+            },
+            "expectedRevision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "taskIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "requestKey": {
+              "type": "string",
+              "description": "根 Run 范围内稳定幂等键；同键同参数重放原登记，同键异参数返回 REQUEST_KEY_CONFLICT",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+            }
+          },
+          "required": [
+            "planId",
+            "expectedRevision",
+            "taskIds",
+            "requestKey"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "await_tasks"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "taskIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "waitMode": {
+              "type": "string",
+              "enum": [
+                "ANY",
+                "ALL"
+              ]
+            },
+            "afterCursor": {
+              "type": "string",
+              "description": "上次 await/read 返回的 cursor 十进制字符串；缺省从 0 开始",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^(0|[1-9][0-9]*)$"
+            },
+            "timeoutMs": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 600000,
+              "description": "等待窗口毫秒；0 表示零等待探询；缺省取服务端配置默认值（上限 600000）"
+            }
+          },
+          "required": [
+            "taskIds",
+            "waitMode"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "read_task_result"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "taskId": {
+              "type": "string",
+              "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "attemptId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          "required": [
+            "taskId",
+            "attemptId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "name": {
+          "const": "cancel_tasks"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "taskIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "minItems": 1,
+              "maxItems": 12
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "taskIds",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "callId",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "ToolOutcome": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "SUCCEEDED",
+            "FAILED",
+            "DENIED",
+            "CANCELLED",
+            "UNKNOWN",
+            "SKIPPED"
+          ]
+        },
+        "errorCode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ContentBlock"
+          }
+        },
+        "structuredContent": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifactIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "服务端分配的不透明标识；客户端不得解析",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exitCode": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "isError": {
+          "type": "boolean"
+        },
+        "callId": {
+          "type": "string",
+          "description": "服务端分配的不透明标识；客户端不得解析",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "errorCode",
+        "summary",
+        "content",
+        "structuredContent",
+        "artifactIds",
+        "truncated",
+        "durationMs",
+        "exitCode",
+        "isError",
+        "callId",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "ContentBlock": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "text"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "artifact"
+            },
+            "artifactId": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "mimeType": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "unsupported": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "artifactId",
+            "mimeType",
+            "description",
+            "unsupported"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "x-tools": [
+    {
+      "name": "list_files",
+      "description": "查看授权任务副本目录；不知道文件位置时先查看或搜索",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "glob": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "read_file",
+      "description": "按行读取文本；大文件分段读取，返回来源哈希。同一 Run 内重复读取「字节未变且行区间已读过」的内容时只返回引用而不重复正文（省上下文）；历史被压缩后需要重新查看正文，或确需再取一次，传 forceFull=true；读取未读过的新行区间或文件已变更时总是返回正文",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "startLine": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "endLine": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "forceFull": {
+            "type": "boolean",
+            "description": "true 时即使内容未变也重新返回正文（用于上下文压缩后重新查看）",
+            "default": false
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "read_artifact",
+      "description": "工具输出或验证日志被截断/压缩而需要更多证据时，按产物 ID 回读当前 Run 的公开 UTF-8 文本；不读取其他 Run 或隐藏产物。byteOffset 从 0 开始，续读使用返回的 nextOffset；maxBytes 请求上限 4..16384，单页实际最多 4096 字节以保证正文完整回灌，返回 maxBytes 为有效值；页末保持完整字符；hasMore 只描述已保存产物，不代表采集阶段丢失内容可恢复",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "artifactId": {
+            "type": "string",
+            "description": "当前 Run 返回的 art_* 引用",
+            "minLength": 5,
+            "maxLength": 128,
+            "pattern": "^art_[A-Za-z0-9_-]{1,124}$"
+          },
+          "byteOffset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "default": 0
+          },
+          "maxBytes": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 16384,
+            "default": 4096
+          }
+        },
+        "required": [
+          "artifactId"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "search_code",
+      "description": "有报错/符号关键词但不确定文件位置时使用；Docker 内 ripgrep 尊重 .gitignore，可用 includeGlobs/excludeGlobs 显式覆盖；零命中返回空匹配，范围不越任务副本；rg 不可用时仅无 glob 的 literal 模式回退受限字面扫描",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "字面串或正则；literal 为默认且大小写敏感",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "path": {
+            "type": "string",
+            "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "literal",
+              "regex"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "includeGlobs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "要包含的文件 glob",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "maxItems": 20
+          },
+          "excludeGlobs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "要排除的文件 glob",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "apply_patch",
+      "description": "已读取目标内容后应用受控补丁；原文或哈希不匹配则返回冲突",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "patch": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000,
+            "pattern": "\\S"
+          },
+          "expectedFileHashes": {
+            "type": "object",
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "patch",
+          "expectedFileHashes"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "WORKSPACE_WRITE"
+    },
+    {
+      "name": "run_command",
+      "description": "仅在 Docker 中执行项目命令；主机命令与凭据不可访问",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000,
+            "pattern": "\\S"
+          },
+          "workdir": {
+            "type": "string",
+            "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "EXECUTE"
+    },
+    {
+      "name": "run_probe",
+      "description": "一次性诊断用：源码登记为当前 Run 产物，在 Linux 沙箱临时目录执行，诊断输出也留在该临时目录，避免污染源码差异和测试发现。command 使用 Bash errexit+pipefail，未显式处理的失败（含管道前段）终止执行；条件分支或 || 可显式处理预期失败。command 用 $DSH_PROBE_FILE 引用脚本、$DSH_WORKSPACE 引用项目。正式回归测试使用 write_file/apply_patch；退出 0 仅是观察，不是独立验收。命令仍有工作区写权限，经过 EXECUTE 审批、预算和超时。源码最多 16384 UTF-8 字节",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "description": "安全单文件名，不允许目录或连续点",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,79}$"
+          },
+          "content": {
+            "type": "string",
+            "description": "UTF-8 探针源码",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "command": {
+            "type": "string",
+            "description": "临时目录中执行的 Linux shell 命令",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 600
+          },
+          "allowRepeated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "fileName",
+          "content",
+          "command"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.1.0",
+      "category": "CORE",
+      "sideEffect": "EXECUTE"
+    },
+    {
+      "name": "git_status",
+      "description": "查看当前任务副本的结构化变更状态",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "git_diff",
+      "description": "检查相对任务基线的修改，含新文件",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "任务副本内相对路径；服务端校验真实父目录及符号链接",
+              "minLength": 1,
+              "maxLength": 1024
+            }
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "update_plan",
+      "description": "记录可读步骤与进展；不会修改用户原文或验收规则。两种互斥形态：steps 为旧展示清单（写工作区 plan.json）；tasks 为结构化计划草案（planId/expectedRevision 更新，服务端落库并返回 revision，只创建/更新草案，不启动任何 worker）",
+      "inputSchema": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "PENDING",
+                        "IN_PROGRESS",
+                        "DONE"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "status"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "steps"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "planId": {
+                "type": "string",
+                "description": "更新时与 expectedRevision 同填；创建时省略，由服务端分配 plan_*",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^plan_[A-Za-z0-9_-]+$"
+              },
+              "expectedRevision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "goal": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000,
+                "pattern": "\\S"
+              },
+              "tasks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "taskId": {
+                      "type": "string",
+                      "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                      "minLength": 1,
+                      "maxLength": 64,
+                      "pattern": "^[A-Za-z0-9_-]+$"
+                    },
+                    "goal": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000,
+                      "pattern": "\\S"
+                    },
+                    "dependsOn": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "pattern": "^[A-Za-z0-9_-]+$"
+                      },
+                      "maxItems": 6
+                    },
+                    "inputRefs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "taskId": {
+                            "type": "string",
+                            "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+                            "minLength": 1,
+                            "maxLength": 64,
+                            "pattern": "^[A-Za-z0-9_-]+$"
+                          },
+                          "output": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "taskId",
+                          "output"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "maxItems": 8
+                    },
+                    "deliverable": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500,
+                      "pattern": "\\S"
+                    },
+                    "acceptance": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "\\S"
+                      },
+                      "maxItems": 8
+                    },
+                    "resourceScope": {
+                      "type": "object",
+                      "properties": {
+                        "read": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "maxItems": 64
+                        },
+                        "write": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "maxItems": 64
+                        }
+                      },
+                      "required": [
+                        "read",
+                        "write"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "executionMode": {
+                      "type": "string",
+                      "enum": [
+                        "DELEGATED",
+                        "INLINE"
+                      ]
+                    },
+                    "required": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "taskId",
+                    "goal",
+                    "dependsOn",
+                    "deliverable",
+                    "acceptance",
+                    "executionMode",
+                    "required"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 12
+              }
+            },
+            "required": [
+              "tasks"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "version": "1.0.0",
+      "category": "CORE",
+      "sideEffect": "WORKSPACE_WRITE"
+    },
+    {
+      "name": "tool_search",
+      "description": "核心能力不足时主动搜索扩展工具；无匹配可换查询",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "EXTENSION",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "run_subagent",
+      "description": "有独立局部工作时委派可信角色，返回产物与证据",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "ARCHITECT",
+              "CODER",
+              "TESTER",
+              "REVIEWER"
+            ]
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000,
+            "pattern": "\\S"
+          },
+          "artifactRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        },
+        "required": [
+          "role",
+          "task",
+          "artifactRefs"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "AGENT",
+      "sideEffect": "DELEGATE"
+    },
+    {
+      "name": "start_orchestration",
+      "description": "需要明确分工和汇合时使用；简单请求留在主 Loop，可携带现有产物中途升级",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "goal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000,
+            "pattern": "\\S"
+          },
+          "template": {
+            "const": "coding-review"
+          },
+          "artifactRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "服务端分配的不透明标识；客户端不得解析",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        },
+        "required": [
+          "goal",
+          "template",
+          "artifactRefs"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "ORCHESTRATION",
+      "sideEffect": "DELEGATE"
+    },
+    {
+      "name": "dispatch_tasks",
+      "description": "把已提交计划中的 DELEGATED 任务原子登记派发：整批校验（计划归属/修订/任务存在/依赖已派发/执行模式/当前状态），任一不满足整批拒绝且不启动任何任务；登记立即返回 dispatchId，任务在后台就绪队列执行，用 await_tasks 等待终态",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "description": "当前根 Run 内已提交计划的 planId（expectedRevision 须与服务端当前修订一致）",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^plan_[A-Za-z0-9_-]+$"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "taskIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 12
+          },
+          "requestKey": {
+            "type": "string",
+            "description": "根 Run 范围内稳定幂等键；同键同参数重放原登记，同键异参数返回 REQUEST_KEY_CONFLICT",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,127}$"
+          }
+        },
+        "required": [
+          "planId",
+          "expectedRevision",
+          "taskIds",
+          "requestKey"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "ORCHESTRATION",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "await_tasks",
+      "description": "等待任务集合 ANY/ALL 到达终态；立即满足或 timeoutMs=0 时立即返回（timedOut=true 表示窗口结束而非失败），否则主循环持久化停车并在条件满足/超时后只回填一次结果；afterCursor 为上次返回的十进制游标，changes 只给游标后的状态迁移",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "taskIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 12
+          },
+          "waitMode": {
+            "type": "string",
+            "enum": [
+              "ANY",
+              "ALL"
+            ]
+          },
+          "afterCursor": {
+            "type": "string",
+            "description": "上次 await/read 返回的 cursor 十进制字符串；缺省从 0 开始",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^(0|[1-9][0-9]*)$"
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 600000,
+            "description": "等待窗口毫秒；0 表示零等待探询；缺省取服务端配置默认值（上限 600000）"
+          }
+        },
+        "required": [
+          "taskIds",
+          "waitMode"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "ORCHESTRATION",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "read_task_result",
+      "description": "读取任务当前权威状态与最新 attempt 的终态结果（状态/错误码/产物引用/用量）；回答实时来自持久化行，不用内存缓存",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "attemptId": {
+            "type": "string",
+            "description": "服务端分配的不透明标识；客户端不得解析",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          }
+        },
+        "required": [
+          "taskId",
+          "attemptId"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "ORCHESTRATION",
+      "sideEffect": "READ_ONLY"
+    },
+    {
+      "name": "cancel_tasks",
+      "description": "登记取消任务并返回“已接受+当前状态”，不宣称已立即终止：未启动任务直接 CANCELLED；运行中任务置 CANCELLING 并在安全点终止后收敛；已终态任务幂等返回当前状态；不存在的任务逐项报告",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "taskIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "计划内任务逻辑标识；由模型提供、服务端校验",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 12
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "taskIds",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "version": "1.0.0",
+      "category": "ORCHESTRATION",
+      "sideEffect": "READ_ONLY"
+    }
+  ]
+}

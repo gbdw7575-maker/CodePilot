@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.5.6</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.dsh</groupId>
+  <artifactId>dsh-backend</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>dsh-backend</name>
+  <description>DSH 本地编程 Agent 后端</description>
+
+  <properties>
+    <java.version>21</java.version>
+    <dsh.contract.version>0.1.0-design</dsh.contract.version>
+  </properties>
+
+  <dependencies>
+    <!-- V01：使用受限 SafeConstructor 解析验证计划；版本由 Spring Boot 管理。 -->
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!-- DSH-008：WebSocket 实时事件推送（原生 WebSocket，非 STOMP） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+    <!-- DSH-002：本地持久化（PostgreSQL 文件库 + JPA），单机单用户 -->
+    <!-- S0 PostgreSQL 迁移：主环境走 PostgreSQL；H2 降级为 test scope 仅用于测试（保速度） -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <!-- DSH-004：工具参数按 tools.schema.json 做标准 JSON Schema 校验（Dispatcher 统一入口） -->
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>1.5.8</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,34 @@
+{
+  "version": "dsh-task-checks-v1",
+  "projectId": "project_fixture",
+  "imageDigest": "a85cd1e028ab62d376ddcce65af9db52011d04e12e117f9aa524f3946f34b324",
+  "executionPolicy": {
+    "network": "none",
+    "rootFilesystem": "read-only",
+    "user": "1000:1000",
+    "capabilities": [],
+    "candidateMount": "read-only",
+    "verifierMount": "read-only",
+    "noNewPrivileges": true
+  },
+  "checks": [
+    {
+      "id": "slugify-semantic",
+      "argv": [
+        "python",
+        "-I",
+        "-B",
+        "/verifier/check_slugify.py"
+      ],
+      "timeoutSeconds": 60,
+      "expectTests": true,
+      "minPassed": 4,
+      "verifiers": [
+        {
+          "path": "check_slugify.py",
+          "sha256": "c1e1b370e89c6e997633cf4a98e52060b5c5d9aa9beb3a7dc3e8522dacf8f9e5"
+        }
+      ]
+    }
+  ]
+}
